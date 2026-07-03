@@ -1,0 +1,35 @@
+{
+  "name": "api-node",
+  "version": "1.0.0",
+  "description": "gRPC Node.js Microservice for OmniTest-Polyglot-Nexus",
+  "main": "index.js",
+  
+  "//": "We set type to 'module' to fully support ECMAScript Modules (ESM). This is required by modern packages like 'pgvector'.",
+  "type": "module",
+  
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "//": "We must use the ts-node/esm loader so that ts-node correctly resolves ESM imports and module paths.",
+    "start": "node --loader ts-node/esm src/index.ts"
+  },
+  "keywords": [
+    "grpc",
+    "typescript",
+    "node",
+    "pgvector"
+  ],
+  "author": "Aspirant CTO / QAQC Lead",
+  "license": "ISC",
+  "dependencies": {
+    "@grpc/grpc-js": "^1.14.4",
+    "@grpc/proto-loader": "^0.8.1",
+    "pg": "^8.22.0",
+    "pgvector": "^0.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.0",
+    "@types/pg": "^8.20.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.3"
+  }
+}

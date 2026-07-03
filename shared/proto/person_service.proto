@@ -1,0 +1,219 @@
+// ============================================================================
+// File: shared/proto/person_service.proto
+// Purpose: Defines the strict gRPC contract for the Person service across all 
+//          polyglot implementations (C#, C++, Java, Node, Python).
+// ============================================================================
+
+syntax = "proto3";
+
+// Package naming aligned with the monorepo structure
+package omnitest.polyglot.nexus;
+
+// Options for different language generators to keep namespaces clean
+option csharp_namespace = "OmniTest.Polyglot.Nexus.Shared.Proto";
+option java_package = "com.omnitest.polyglot.nexus.shared.proto";
+option java_outer_classname = "PersonServiceProto";
+
+// ============================================================================
+// ENUMS (Categorical Data)
+// Applying Single Responsibility Principle (SRP): Each enum defines a strict, 
+// closed set of valid states, preventing invalid data entry at the contract level.
+// ============================================================================
+
+enum Sex {
+
+SEX_UNSPECIFIED = 0; // Protobuf requires the 0th element to be the default
+
+SEX_MALE = 1;
+
+SEX_FEMALE = 2;
+
+SEX_BIGENDER = 3;
+
+SEX_AGENDER = 4;
+
+}
+
+enum MaritalStatus {
+
+MARITAL_STATUS_UNSPECIFIED = 0;
+
+MARITAL_STATUS_SINGLE = 1;
+
+MARITAL_STATUS_MARRIED = 2;
+
+MARITAL_STATUS_DIVORCED = 3;
+
+MARITAL_STATUS_WIDOWED = 4;
+
+MARITAL_STATUS_SINGLE_PARENT = 5;
+
+}
+
+enum LivingPlace {
+
+LIVING_PLACE_UNSPECIFIED = 0;
+
+LIVING_PLACE_STUDIO = 1;
+
+LIVING_PLACE_APARTMENT = 2;
+
+LIVING_PLACE_HOUSE = 3;
+
+LIVING_PLACE_VILLA = 4;
+
+LIVING_PLACE_HOSTEL = 5;
+
+LIVING_PLACE_DORM = 6;
+
+LIVING_PLACE_HOTEL = 7;
+
+}
+
+enum Occupation {
+
+OCCUPATION_UNSPECIFIED = 0;
+
+OCCUPATION_JOB_SEEKER = 1;
+
+OCCUPATION_JOBLESS = 2;
+
+OCCUPATION_FULL_TIME = 3;
+
+OCCUPATION_PART_TIME = 4;
+
+OCCUPATION_STUDENT = 5;
+
+OCCUPATION_HOUSEKEEPER = 6;
+
+}
+
+// ============================================================================
+
+// CORE ENTITIES
+
+// ============================================================================
+
+message Person {
+
+string id = 1; // GUID/UUID
+
+string name = 2;
+
+string family = 3;
+
+int32 age = 4;
+
+Sex sex = 5;
+
+MaritalStatus marital_status = 6;
+
+int32 children_count = 7;
+
+LivingPlace living_place = 8;
+
+Occupation occupation = 9;
+
+string national_code = 10;
+
+}
+
+// ============================================================================
+
+// REQUEST & RESPONSE MESSAGES
+
+// ============================================================================
+
+// Request to insert a new person.
+
+message CreatePersonRequest {
+
+Person person = 1;
+
+}
+
+// Response after attempting to insert a person.
+
+message CreatePersonResponse {
+
+bool success = 1;
+
+string message = 2;
+
+string inserted_id = 3;
+
+}
+
+// Request to read persons with Pagination (Mandatory for 1M records)
+
+message ReadAllPersonsRequest {
+
+int32 limit = 1; // Max records to return (e.g., 100)
+
+int32 offset = 2; // Starting record index
+
+}
+
+// Generic list response used by multiple RPC methods.
+
+message PersonListResponse {
+
+repeated Person persons = 1;
+
+int32 total_count = 2;
+
+}
+
+// Vector/AI search request for pgvector benchmarking.
+
+message VectorSearchRequest {
+
+repeated float vector = 1; // 384 dimensions from local LLM
+
+int32 top_k = 2; // Number of nearest neighbors
+
+}
+
+// Traditional attribute-based filter request.
+
+message FilterSearchRequest {
+
+optional string name = 1;
+
+optional string family = 2;
+
+optional int32 min_age = 3;
+
+optional int32 max_age = 4;
+
+optional Sex sex = 5;
+
+optional string national_code = 6;
+
+}
+
+// ============================================================================
+
+// SERVICE DEFINITION
+
+// ============================================================================
+
+service PersonService {
+
+// 1. Write: Insert data
+
+rpc CreatePerson(CreatePersonRequest) returns (CreatePersonResponse);
+
+// 2. Read: Paginated retrieval
+
+rpc ReadAllPersons(ReadAllPersonsRequest) returns (PersonListResponse);
+
+// 3. Search: Traditional SQL filtering
+
+rpc SearchByFilter(FilterSearchRequest) returns (PersonListResponse);
+
+// 4. AI Search: Vector similarity (HNSW index)
+
+rpc SearchByVector(VectorSearchRequest) returns (PersonListResponse);
+
+}

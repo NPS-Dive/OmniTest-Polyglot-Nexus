@@ -1,0 +1,91 @@
+{
+  "compilerOptions": {
+    /* =========================================================================
+       FILE LAYOUT & COMPILATION CONTEXT
+       ========================================================================= */
+    
+    // Specifies the root directory of input files. Enforces that all source files are under 'src'.
+    "rootDir": "./src",
+    
+    // Redirects output structure to the 'dist' directory when building for production.
+    "outDir": "./dist",
+
+    /* =========================================================================
+       ENVIRONMENT & MODULE SETTINGS
+       ========================================================================= */
+    
+    // Sets the JavaScript language version for compiled output. 
+    // ES2022 is highly compatible with modern Node.js versions.
+    "target": "ES2022",
+    
+    // Node16 instructs TypeScript to emit native ECMAScript Modules (ESM) when package.json has "type": "module".
+    "module": "Node16",
+    
+    // Node16 module resolution natively supports subpath imports (like 'pgvector/pg') and requires .js extensions on relative imports.
+    "moduleResolution": "Node16",
+    
+    // Includes type definitions for Node.js built-in modules (e.g., path, fs).
+    "types": ["node"],
+
+    /* =========================================================================
+       INTEROPERABILITY SETTINGS
+       ========================================================================= */
+    
+    // Emits additional JavaScript to ease support for importing CommonJS modules into an ESM environment.
+    "esModuleInterop": true,
+    
+    // Ensures that casing of file names is consistent across platforms (Windows vs Linux).
+    // Crucial for monorepos accessed by different OS environments.
+    "forceConsistentCasingInFileNames": true,
+
+    /* =========================================================================
+       OUTPUT & DEBUGGING SETTINGS
+       ========================================================================= */
+    
+    // Generates corresponding '.map' files. Highly recommended for debugging production errors.
+    "sourceMap": true,
+    
+    // Generates '.d.ts' declaration files. Useful if this project exports types to other monorepo projects.
+    "declaration": true,
+    
+    // Generates a sourcemap for the '.d.ts' files, mapping them back to the original '.ts' source.
+    "declarationMap": true,
+
+    /* =========================================================================
+       STRICT TYPE-CHECKING OPTIONS (Clean Code & QA Standards)
+       ========================================================================= */
+    
+    // Enables all strict type-checking options (noImplicitAny, strictNullChecks, etc.).
+    // Mandatory for high-quality enterprise software and avoiding runtime reference errors.
+    "strict": true,
+    
+    // Ensures that accessing arrays/objects requires checking if the item is undefined.
+    // Enforces defensive programming principles.
+    "noUncheckedIndexedAccess": true,
+    
+    // Ensures that optional properties must be strictly omitted or assigned a valid type.
+    "exactOptionalPropertyTypes": true,
+    
+    // Ensures each file can be safely transpiled without relying on other files.
+    // Speeds up build times and works well with tools like ts-node and SWC.
+    "isolatedModules": true,
+
+    /* =========================================================================
+       COMPILATION SPEED
+       ========================================================================= */
+    
+    // Skips type checking of declaration files (*.d.ts) in 'node_modules'.
+    // Significantly improves compilation time and ignores errors in third-party libraries.
+    "skipLibCheck": true
+  },
+
+  /* =========================================================================
+     INCLUSION / EXCLUSION RULES
+     ========================================================================= */
+     
+  // Specifies an array of filenames or patterns to include in the program.
+  "include": ["src/**/*"],
+  
+  // Specifies an array of filenames or patterns that should be skipped.
+  "exclude": ["node_modules", "dist", "**/*.spec.ts"]
+}

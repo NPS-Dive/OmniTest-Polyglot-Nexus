@@ -1,0 +1,27 @@
+# ==============================================================================
+# File: infrastructure/docker-compose.yml
+# Responsibility: Define and run multi-container Docker applications.
+# Rationale: Ensures a consistent, isolated database environment across all 
+# developer machines and CI/CD pipelines without polluting the host OS.
+# ==============================================================================
+version: '3.8'
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: opn-postgres
+    shm_size: 2g
+    environment:
+      POSTGRES_USER: opn_admin
+      POSTGRES_PASSWORD: opn_secret
+      POSTGRES_DB: opn_db
+    ports:
+      - "5432:5432"
+    volumes:
+      # Persistent storage for the database data
+      - pg_data:/var/lib/postgresql/data
+      # CORRECTED PATH: ../../ navigates up from shared/infrastructure to the project root
+      - ../../data:/data
+
+volumes:
+  pg_data:
