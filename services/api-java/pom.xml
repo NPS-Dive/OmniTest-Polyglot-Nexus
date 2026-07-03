@@ -1,39 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  ==============================================================================
+  File: services/api-java/pom.xml
+  Purpose: Maven build configuration for the Java Spring Boot gRPC service.
+  Architecture: Clean Architecture. Handles dependencies for Spring Boot, gRPC, 
+                PostgreSQL, and pgvector.
+  ==============================================================================
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- Spring Boot Parent -->
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.2.4</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath/>
     </parent>
 
     <groupId>com.omnitest</groupId>
     <artifactId>api-java</artifactId>
     <version>1.0.0</version>
     <name>api-java</name>
-    <description>Java Spring Boot gRPC API for OmniTest-Polyglot-Nexus</description>
 
     <properties>
         <java.version>17</java.version>
         <grpc.version>1.62.2</grpc.version>
         <protobuf.version>3.25.3</protobuf.version>
-        <!-- The grpc-spring-boot-starter auto-configures the gRPC server -->
         <grpc.spring.boot.starter.version>3.1.0.RELEASE</grpc.spring.boot.starter.version>
     </properties>
 
     <dependencies>
-        <!-- Spring Boot Web (Optional but good for health checks/metrics) -->
+        <!-- Spring Boot Web for health checks -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- Spring JDBC for database operations (using NamedParameterJdbcTemplate) -->
+        <!-- Spring JDBC for DB operations (replaces JPA for better pgvector control) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jdbc</artifactId>
@@ -79,7 +84,6 @@
     </dependencies>
 
     <build>
-        <!-- Extension required for os-specific protobuf generation -->
         <extensions>
             <extension>
                 <groupId>kr.motd.maven</groupId>
@@ -93,7 +97,6 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
             
-            <!-- Protobuf Maven Plugin: Automatically compiles .proto files into Java classes -->
             <plugin>
                 <groupId>org.xolstice.maven.plugins</groupId>
                 <artifactId>protobuf-maven-plugin</artifactId>
@@ -102,8 +105,8 @@
                     <protocArtifact>com.google.protobuf:protoc:${protobuf.version}:exe:${os.detected.classifier}</protocArtifact>
                     <pluginId>grpc-java</pluginId>
                     <pluginArtifact>io.grpc:protoc-gen-grpc-java:${grpc.version}:exe:${os.detected.classifier}</pluginArtifact>
-                    <!-- Expects your .proto files to be in src/main/proto -->
-                    <protoSourceRoot>src/main/proto</protoSourceRoot>
+                    <!-- Points directly to the shared monorepo folder! No copying needed. -->
+                    <protoSourceRoot>../../shared/proto</protoSourceRoot>
                 </configuration>
                 <executions>
                     <execution>

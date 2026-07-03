@@ -91,3 +91,5 @@ cmake_install.cmake
 .env
 .env.*
 docker-compose.override.yml
+
+.fake
