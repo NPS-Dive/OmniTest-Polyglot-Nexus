@@ -1,112 +1,111 @@
-// ============================================================================
-// File: src/infrastructure/db/PostgresPersonRepository.ts
-// Purpose: Concrete implementation of IPersonRepository for PostgreSQL.
-// SOLID Principle: 
-// - Liskov Substitution Principle (LSP): This can be swapped with a MongoRepository in the future without breaking the application.
-// - Single Responsibility Principle (SRP): Handles only database interactions.
-// ============================================================================
+import { Pool } from 'pg';
+import { IPersonRepository, PersonFilter } from '../../domain/IPersonRepository.js';
 
-import pg from 'pg';
-import { IPersonRepository, Person } from '../../domain/IPersonRepository.js'; // Note the .js extension for ESM
-
+/**
+ * PostgreSQL implementation of the Person Repository.
+ * Handles all direct database interactions using node-postgres (pg).
+ */
 export class PostgresPersonRepository implements IPersonRepository {
-    private pool: pg.Pool;
+    private pool: Pool;
 
-    /**
-     * Dependency Injection of the database pool.
-     * Follows Dependency Inversion Principle (DIP) by accepting an abstraction/configured instance.
-     * @param pool pg.Pool instance configured in index.ts
-     */
-    constructor(pool: pg.Pool) {
+    constructor(pool: Pool) {
         this.pool = pool;
     }
 
-    async createPerson(person: Person): Promise<string> {
-        // Implementation omitted for brevity, will be implemented in next phases
-        throw new Error("Method not implemented.");
-    }
-
-    /**
-     * Retrieves a paginated list of persons specifically from the Node.js table.
-     * Maps 'first_name' to 'name' and 'last_name' to 'family' to match the Domain model.
-     * @param limit Number of records to return
-     * @param offset Number of records to skip
-     */
-    async readAllPersons(limit: number, offset: number): Promise<{ persons: Person[], totalCount: number }> {
-        const client = await this.pool.connect();
+    public async create(person: any): Promise<any> {
+        const query = `
+            INSERT INTO persons_node (
+                id, first_name, last_name, age, sex, marital_status, 
+                children_count, living_place, occupation, national_code, embedding
+            ) VALUES (
+                gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10
+            ) RETURNING id;
+        `;
+        const values = [
+            person.first_name, person.last_name, person.age, person.sex, 
+            person.marital_status, person.children_count, person.living_place, 
+            person.occupation, person.national_code, person.embedding
+        ];
+        
         try {
-            // Target the 'persons_node' table and alias columns to match the Domain/Protobuf expectation
-            const dataQuery = `
-                SELECT 
-                    id, 
-                    first_name AS name, 
-                    last_name AS family, 
-                    age, 
-                    sex, 
-                    marital_status, 
-                    children_count, 
-                    living_place, 
-                    occupation, 
-                    national_code 
-                FROM persons_node 
-                LIMIT $1 OFFSET $2;
-            `;
-            
-            // Fast estimation for total count on the Node table
-            const countQuery = `SELECT reltuples::bigint AS estimate FROM pg_class WHERE relname = 'persons_node';`;
-
-            const [dataResult, countResult] = await Promise.all([
-                client.query(dataQuery, [limit, offset]),
-                client.query(countQuery)
-            ]);
-
-            return {
-                persons: dataResult.rows,
-                totalCount: parseInt(countResult.rows[0].estimate, 10)
-            };
-        } finally {
-            client.release();
+            const result = await this.pool.query(query, values);
+            return result.rows[0];
+        } catch (error: any) {
+            console.error('[DB] Error creating person:', error.message);
+            throw error;
         }
     }
 
-    /**
-     * Performs a semantic search using pgvector on the Node.js table.
-     * @param vector The query embedding vector
-     * @param topK Number of closest results to return
-     */
-    async searchByVector(vector: number[], topK: number): Promise<{ persons: Person[], totalCount: number }> {
-        const client = await this.pool.connect();
-        try {
-            // Format array for pgvector string requirement: '[0.1, 0.2, ...]'
-            const vectorString = `[${vector.join(',')}]`;
-            
-            // Target 'persons_node' and alias columns.
-            // Using cosine distance operator (<=>) for vector comparison.
-            const query = `
-                SELECT 
-                    id, 
-                    first_name AS name, 
-                    last_name AS family, 
-                    age, 
-                    sex, 
-                    marital_status, 
-                    children_count, 
-                    living_place, 
-                    occupation, 
-                    national_code 
-                FROM persons_node 
-                ORDER BY embedding <=> $1 
-                LIMIT $2;
-            `;
-            
-            const result = await client.query(query, [vectorString, topK]);
+    public async readAll(limit = 10, offset = 0): Promise<any[]> {
+        const query = `
+            SELECT id, first_name AS name, last_name AS family, age, sex, 
+                   marital_status AS "maritalStatus", children_count AS "childrenCount", 
+                   living_place AS "livingPlace", occupation, national_code AS "nationalCode" 
+            FROM persons_node 
+            LIMIT $1 OFFSET $2;
+        `;
+        const result = await this.pool.query(query, [limit, offset]);
+        return result.rows;
+    }
 
-            return {
-                persons: result.rows,
-                totalCount: result.rows.length
-            };
-        } finally {
-            client.release();
+    public async searchByVector(vector: number[], limit = 5): Promise<any[]> {
+        // Convert vector array to pgvector string format: '[1,2,3]'
+        const vectorString = `[${vector.join(',')}]`;
+        const query = `
+            SELECT id, first_name AS name, last_name AS family, national_code, 
+                   embedding <-> $1 AS distance 
+            FROM persons_node 
+            ORDER BY distance 
+            LIMIT $2;
+        `;
+        const result = await this.pool.query(query, [vectorString, limit]);
+        return result.rows;
+    }
+
+    /**
+     * Searches persons by partial name/family and exact national code.
+     * Uses ILIKE for case-insensitive partial matching on names.
+     */
+    public async searchByFilter(filters: any): Promise<any[]> {
+        // Start with a base query
+        let query = `
+            SELECT id, first_name AS name, last_name AS family, age, sex, 
+                   marital_status AS "maritalStatus", children_count AS "childrenCount", 
+                   living_place AS "livingPlace", occupation, national_code AS "nationalCode" 
+            FROM persons_node 
+            WHERE 1=1
+        `;
+        
+        const values: any[] = [];
+        let paramIndex = 1;
+
+        // Dynamically append filters if they are valid, non-empty strings
+        if (typeof filters.firstName === 'string' && filters.firstName.trim() !== "") {
+            query += ` AND first_name ILIKE $${paramIndex}`;
+            values.push(`%${filters.firstName.trim()}%`);
+            paramIndex++;
         }
+        
+        if (typeof filters.lastName === 'string' && filters.lastName.trim() !== "") {
+            query += ` AND last_name ILIKE $${paramIndex}`;
+            values.push(`%${filters.lastName.trim()}%`);
+            paramIndex++;
+        }
+        
+        if (typeof filters.nationalCode === 'string' && filters.nationalCode.trim() !== "") {
+            query += ` AND national_code = $${paramIndex}`;
+            values.push(filters.nationalCode.trim());
+            paramIndex++;
+        }
+
+        // Add a hard limit to prevent dumping the entire database if no filters are provided
+        query += ` LIMIT 100`;
+
+        // Log the final query and values to help debugging
+        console.log("[DB] Executing Query:", query.trim().replace(/\s+/g, ' '));
+        console.log("[DB] With Values:", values);
+
+        const result = await this.pool.query(query, values);
+        return result.rows;
     }
 }

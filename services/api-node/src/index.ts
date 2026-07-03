@@ -1,67 +1,55 @@
-// ============================================================================
-// File: src/index.ts
-// Purpose: Composition Root / Application Entry Point.
-// Design Pattern: Orchestrator. Wires up dependencies (DB Pool -> Repo -> 
-// Controller -> Server) ensuring other modules remain decoupled.
-// ============================================================================
+/**
+ * @file index.ts
+ * @description Application Entry Point (Composition Root).
+ * Wires up dependencies (DIP) and starts the infrastructure components.
+ */
 
-import * as grpc from '@grpc/grpc-js';
-import * as protoLoader from '@grpc/proto-loader';
 import pg from 'pg';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-// ESM Local Imports (.js required)
 import { PostgresPersonRepository } from './infrastructure/db/PostgresPersonRepository.js';
 import { PersonController } from './presentation/PersonController.js';
+import { GrpcServer } from './infrastructure/grpc/Server.js';
 
-// ESM Path resolution
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const PROTO_PATH = path.resolve(__dirname, '../../../shared/proto/person_service.proto');
+async function bootstrap() {
+    console.log('Bootstrapping api-node service...');
 
-async function main() {
-    // 1. Initialize Infrastructure Configuration
-    // Use environment variables for production, hardcoded here for local QA
+    // 1. Initialize Database Connection (Infrastructure)
+    // Connecting using the specific user/db for the Polyglot Nexus architecture
     const pool = new pg.Pool({
-    user: 'opn_admin',
-    host: 'localhost',
-    database: 'opn_db',
-    password: 'opn_secret',
-    port: 5432,
-});
-
-    // 2. Load Protobuf Contracts
-    const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
-        keepCase: true, longs: String, enums: String, defaults: true, oneofs: true
+        host: 'localhost',
+        port: 5432,
+        user: 'opn_admin',
+        password: 'opn_secret',
+        database: 'opn_db',
     });
-    const protoDescriptor = grpc.loadPackageDefinition(packageDefinition) as any;
-    const personProto = protoDescriptor.omnitest.polyglot.nexus;
 
-    // 3. Assemble Dependency Graph (DIP & Composition Root)
-    const repository = new PostgresPersonRepository(pool);
-    const controller = new PersonController(repository);
+    // Test DB connection on startup to fail fast if disconnected
+    try {
+        const client = await pool.connect();
+        console.log('[DB] Successfully connected to PostgreSQL.');
+        client.release();
+    } catch (dbError) {
+        console.error('[DB] Failed to connect to PostgreSQL:', dbError);
+        process.exit(1);
+    }
 
-    // 4. Initialize gRPC Server
-    const server = new grpc.Server();
+    // 2. Dependency Injection / Instantiation
+    // Inject DB pool into Repository (Data Access)
+    const personRepository = new PostgresPersonRepository(pool);
     
-    // Bind the generated handlers from our controller to the gRPC service definition
-    server.addService(personProto.PersonService.service, controller.getHandlers());
+    // Inject Repository into Controller (Presentation layer decoupled from DB)
+    const personController = new PersonController(personRepository);
 
-    // 5. Start Listening
-    const port = 5079;
-    server.bindAsync(`0.0.0.0:${port}`, grpc.ServerCredentials.createInsecure(), (error, boundPort) => {
-        if (error) {
-            console.error("Failed to bind gRPC server:", error);
-            return;
-        }
-        console.log(`Node.js gRPC API started securely on http://0.0.0.0:${boundPort}`);
-        console.log(`Architecture configured following SOLID principles.`);
-    });
+    // 3. Initialize and Start the gRPC Server (Transport Layer)
+    const port = process.env.PORT || 5079;
+    const grpcServer = new GrpcServer(port);
+    
+    // Bind the controller and start listening
+    grpcServer.bindPersonService(personController);
+    grpcServer.start();
 }
 
-// Bootstrap application
-main().catch(err => {
-    console.error("Fatal exception during startup:", err);
+// Execute the bootstrap sequence
+bootstrap().catch((err) => {
+    console.error('Fatal error during bootstrap:', err);
     process.exit(1);
 });

@@ -1,72 +1,76 @@
-// src/infrastructure/grpc/Server.ts
+/**
+ * @file Server.ts
+ * @description Infrastructure layer for handling gRPC server initialization and transport.
+ * Obeys SRP: Only handles network/transport layer logic.
+ */
 
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import path from 'path';
 
-/**
- * GrpcServer
- * 
- * Encapsulates the configuration and lifecycle of the @grpc/grpc-js server.
- */
+// Recreate __dirname for ESM context
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 export class GrpcServer {
     private server: grpc.Server;
+    private port: string | number;
 
-    constructor() {
+    /**
+     * @param port The port number where the gRPC server will listen
+     */
+    constructor(port: string | number) {
         this.server = new grpc.Server();
+        this.port = port;
     }
 
     /**
-     * Loads the protobuf definition and binds the controller methods to it.
-     * 
-     * @param controller - The initialized PersonController
+     * Binds the PersonService controller to the gRPC server.
+     * @param personController The presentation controller handling gRPC requests.
      */
-    public setup(controller: any): void {
-        // In native ESM, __dirname does not exist. We must calculate it using import.meta.url.
-        const __filename = fileURLToPath(import.meta.url);
-        const __dirname = dirname(__filename);
-
-        // Path to the shared proto file in your monorepo structure
-        const PROTO_PATH = join(__dirname, '../../../../shared/proto/person.proto');
-
-        // Load the .proto file synchronously with standard configuration
+    public bindPersonService(personController: any): void {
+        // 1. Resolve the path to the shared proto file. 
+        // Relative from: src/infrastructure/grpc/Server.ts -> ../../../shared/proto/person_service.proto
+        const PROTO_PATH = path.resolve(__dirname, '../../../../../shared/proto/person_service.proto');
+        
+        // 2. Load the proto file synchronously
         const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
             keepCase: true,
             longs: String,
             enums: String,
             defaults: true,
-            oneofs: true
+            oneofs: true,
         });
 
-        // Extract the loaded package (assuming your proto package is named 'person_service')
+        // 3. Load the package definition into a gRPC object
         const protoDescriptor = grpc.loadPackageDefinition(packageDefinition) as any;
-        const personProto = protoDescriptor.person_service; 
+        
+        // 4. Extract the correct namespace matching the .proto file
+        const personProto = protoDescriptor.omnitest.polyglot.nexus;
 
-        // Bind the gRPC service definition to our controller implementation
+        // 5. Bind the service methods to the controller implementation
         this.server.addService(personProto.PersonService.service, {
-            SearchPersons: controller.searchPersons
+            CreatePerson: personController.createPerson.bind(personController),
+            ReadAllPersons: personController.readAllPersons.bind(personController),
+            SearchByFilter: personController.searchByFilter.bind(personController),
+            SearchByVector: personController.searchByVector.bind(personController),
         });
     }
 
     /**
-     * Starts the gRPC server on the specified port.
+     * Starts the gRPC server listening on the specified port.
      */
-    public start(port: number = 5079): void {
-        const address = `0.0.0.0:${port}`;
-        
+    public start(): void {
         this.server.bindAsync(
-            address,
-            grpc.ServerCredentials.createInsecure(),
+            `0.0.0.0:${this.port}`,
+            grpc.ServerCredentials.createInsecure(), // Development only; use TLS in prod
             (error, boundPort) => {
                 if (error) {
-                    console.error(`Failed to bind server on ${address}`, error);
+                    console.error(`[gRPC] Server binding failed: ${error.message}`);
                     return;
                 }
-                // start() is deprecated in newer versions, binding automatically starts it, 
-                // but we call it safely if it exists on the instance.
-                this.server.start(); 
-                console.log(`[api-node] gRPC Server running seamlessly at ${address}`);
+                console.log(`[gRPC] Server is running on port ${boundPort}`);
             }
         );
     }
