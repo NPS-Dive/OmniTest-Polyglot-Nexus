@@ -16,204 +16,111 @@ option java_outer_classname = "PersonServiceProto";
 
 // ============================================================================
 // ENUMS (Categorical Data)
-// Applying Single Responsibility Principle (SRP): Each enum defines a strict, 
-// closed set of valid states, preventing invalid data entry at the contract level.
 // ============================================================================
 
 enum Sex {
-
-SEX_UNSPECIFIED = 0; // Protobuf requires the 0th element to be the default
-
-SEX_MALE = 1;
-
-SEX_FEMALE = 2;
-
-SEX_BIGENDER = 3;
-
-SEX_AGENDER = 4;
-
+    SEX_UNSPECIFIED = 0;
+    SEX_MALE = 1;
+    SEX_FEMALE = 2;
+    SEX_BIGENDER = 3;
+    SEX_AGENDER = 4;
 }
 
 enum MaritalStatus {
-
-MARITAL_STATUS_UNSPECIFIED = 0;
-
-MARITAL_STATUS_SINGLE = 1;
-
-MARITAL_STATUS_MARRIED = 2;
-
-MARITAL_STATUS_DIVORCED = 3;
-
-MARITAL_STATUS_WIDOWED = 4;
-
-MARITAL_STATUS_SINGLE_PARENT = 5;
-
+    MARITAL_STATUS_UNSPECIFIED = 0;
+    MARITAL_STATUS_SINGLE = 1;
+    MARITAL_STATUS_MARRIED = 2;
+    MARITAL_STATUS_DIVORCED = 3;
+    MARITAL_STATUS_WIDOWED = 4;
+    MARITAL_STATUS_SINGLE_PARENT = 5;
 }
 
 enum LivingPlace {
-
-LIVING_PLACE_UNSPECIFIED = 0;
-
-LIVING_PLACE_STUDIO = 1;
-
-LIVING_PLACE_APARTMENT = 2;
-
-LIVING_PLACE_HOUSE = 3;
-
-LIVING_PLACE_VILLA = 4;
-
-LIVING_PLACE_HOSTEL = 5;
-
-LIVING_PLACE_DORM = 6;
-
-LIVING_PLACE_HOTEL = 7;
-
+    LIVING_PLACE_UNSPECIFIED = 0;
+    LIVING_PLACE_STUDIO = 1;
+    LIVING_PLACE_APARTMENT = 2;
+    LIVING_PLACE_HOUSE = 3;
+    LIVING_PLACE_VILLA = 4;
+    LIVING_PLACE_HOSTEL = 5;
+    LIVING_PLACE_DORM = 6;
+    LIVING_PLACE_HOTEL = 7;
 }
 
 enum Occupation {
-
-OCCUPATION_UNSPECIFIED = 0;
-
-OCCUPATION_JOB_SEEKER = 1;
-
-OCCUPATION_JOBLESS = 2;
-
-OCCUPATION_FULL_TIME = 3;
-
-OCCUPATION_PART_TIME = 4;
-
-OCCUPATION_STUDENT = 5;
-
-OCCUPATION_HOUSEKEEPER = 6;
-
+    OCCUPATION_UNSPECIFIED = 0;
+    OCCUPATION_JOB_SEEKER = 1;
+    OCCUPATION_JOBLESS = 2;
+    OCCUPATION_FULL_TIME = 3;
+    OCCUPATION_PART_TIME = 4;
+    OCCUPATION_STUDENT = 5;
+    OCCUPATION_HOUSEKEEPER = 6;
 }
 
 // ============================================================================
-
 // CORE ENTITIES
-
 // ============================================================================
 
 message Person {
-
-string id = 1; // GUID/UUID
-
-string name = 2;
-
-string family = 3;
-
-int32 age = 4;
-
-Sex sex = 5;
-
-MaritalStatus marital_status = 6;
-
-int32 children_count = 7;
-
-LivingPlace living_place = 8;
-
-Occupation occupation = 9;
-
-string national_code = 10;
-
+    string id = 1; // GUID/UUID
+    string first_name = 2;
+    string last_name = 3;
+    int32 age = 4;
+    string birth_date = 5; // e.g. "1990-01-01"
+    Sex gender = 6; 
+    MaritalStatus marital_status = 7;
+    int32 children_count = 8;
+    LivingPlace living_place = 9;
+    Occupation job_category = 10;
+    string national_code = 11;
+    bool has_passport = 12;
+    repeated float embedding_vector = 13; // For pgvector
 }
 
 // ============================================================================
-
 // REQUEST & RESPONSE MESSAGES
-
 // ============================================================================
-
-// Request to insert a new person.
 
 message CreatePersonRequest {
-
-Person person = 1;
-
+    Person person = 1;
 }
-
-// Response after attempting to insert a person.
 
 message CreatePersonResponse {
-
-bool success = 1;
-
-string message = 2;
-
-string inserted_id = 3;
-
+    bool success = 1;
+    string message = 2;
+    string inserted_id = 3;
 }
-
-// Request to read persons with Pagination (Mandatory for 1M records)
 
 message ReadAllPersonsRequest {
-
-int32 limit = 1; // Max records to return (e.g., 100)
-
-int32 offset = 2; // Starting record index
-
+    int32 limit = 1; 
+    int32 offset = 2; 
 }
-
-// Generic list response used by multiple RPC methods.
 
 message PersonListResponse {
-
-repeated Person persons = 1;
-
-int32 total_count = 2;
-
+    repeated Person persons = 1;
+    int32 total_count = 2;
 }
-
-// Vector/AI search request for pgvector benchmarking.
 
 message VectorSearchRequest {
-
-repeated float vector = 1; // 384 dimensions from local LLM
-
-int32 top_k = 2; // Number of nearest neighbors
-
+    repeated float vector = 1; 
+    int32 top_k = 2; 
 }
 
-// Traditional attribute-based filter request.
-
 message FilterSearchRequest {
-
-optional string name = 1;
-
-optional string family = 2;
-
-optional int32 min_age = 3;
-
-optional int32 max_age = 4;
-
-optional Sex sex = 5;
-
-optional string national_code = 6;
-
+    optional string first_name = 1;
+    optional string last_name = 2;
+    optional int32 min_age = 3;
+    optional int32 max_age = 4;
+    optional Sex gender = 5;
+    optional string national_code = 6;
 }
 
 // ============================================================================
-
 // SERVICE DEFINITION
-
 // ============================================================================
 
 service PersonService {
-
-// 1. Write: Insert data
-
-rpc CreatePerson(CreatePersonRequest) returns (CreatePersonResponse);
-
-// 2. Read: Paginated retrieval
-
-rpc ReadAllPersons(ReadAllPersonsRequest) returns (PersonListResponse);
-
-// 3. Search: Traditional SQL filtering
-
-rpc SearchByFilter(FilterSearchRequest) returns (PersonListResponse);
-
-// 4. AI Search: Vector similarity (HNSW index)
-
-rpc SearchByVector(VectorSearchRequest) returns (PersonListResponse);
-
+    rpc CreatePerson(CreatePersonRequest) returns (CreatePersonResponse);
+    rpc ReadAllPersons(ReadAllPersonsRequest) returns (PersonListResponse);
+    rpc SearchByFilter(FilterSearchRequest) returns (PersonListResponse);
+    rpc SearchByVector(VectorSearchRequest) returns (PersonListResponse);
 }
