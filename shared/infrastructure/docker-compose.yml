@@ -20,8 +20,10 @@ services:
     volumes:
       # Persistent storage for the database data
       - pg_data:/var/lib/postgresql/data
-      # CORRECTED PATH: ../../ navigates up from shared/infrastructure to the project root
-      - ../../data:/data
+      # Maps initialization scripts to Postgres init directory
+      - ../../data/vector-store:/docker-entrypoint-initdb.d
+      # Maps the data directory so SQL scripts can read master_seed.csv
+      - ../../data/master_seed.csv:/master_seed.csv
 
 volumes:
   pg_data:
