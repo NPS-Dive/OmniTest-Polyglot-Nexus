@@ -1,0 +1,28 @@
+# ==============================================================================
+# File: shared/infrastructure/docker-compose.yml
+# Purpose: Local platform stack. Phase A = Postgres+pgvector only.
+# Later phases append otel-collector, prometheus, grafana, tempo in this file.
+# SOLID: SRP per service. Init SQL lives in data/vector-store (01-05 only).
+# Existing pg_data: init scripts will NOT re-run. Use
+# data/vector-store/migrations/migrate_add_golang.sql instead of wiping the volume.
+# ==============================================================================
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: opn-postgres
+    shm_size: 2g
+    environment:
+      POSTGRES_USER: opn_admin
+      POSTGRES_PASSWORD: opn_secret
+      POSTGRES_DB: opn_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      # Top-level 01-05 *.sql only; nested migrations/ are not auto-executed
+      - ../../data/vector-store:/docker-entrypoint-initdb.d
+      # Server COPY in 03_seed_data.sql reads this exact path
+      - ../../data/master_seed.csv:/master_seed.csv
+
+volumes:
+  pg_data:

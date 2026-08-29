@@ -1,0 +1,10 @@
+{
+  "name": "omnitest-api-cpp",
+  "version-string": "1.0.0",
+  "description": "C++ gRPC Person service (persons_cpp, port 50051)",
+  "dependencies": [
+    "grpc",
+    "protobuf",
+    "libpqxx"
+  ]
+}

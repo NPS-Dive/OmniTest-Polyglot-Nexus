@@ -1,0 +1,10 @@
+# ============================================================================
+# File: services/api-go/.gitignore
+# Purpose: Ignore local Go build artifacts. Generated proto stubs are committed
+#          so `go run` works without protoc installed.
+# ============================================================================
+/bin/
+*.exe
+*.test
+*.out
+vendor/

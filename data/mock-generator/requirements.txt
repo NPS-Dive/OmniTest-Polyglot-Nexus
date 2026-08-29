@@ -1,0 +1,8 @@
+# File: data/mock-generator/requirements.txt
+# Purpose: Python deps for CSV generation (faker) and embedding ETL (pgvector backfill).
+# SOLID: SRP — this file only declares versions; no runtime logic.
+
+faker==25.0.0
+psycopg2-binary==2.9.9
+sentence-transformers==3.1.1
+numpy==1.26.4

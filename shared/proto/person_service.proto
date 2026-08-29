@@ -1,0 +1,134 @@
+// ============================================================================
+// File: shared/proto/person_service.proto
+// Purpose: Single gRPC contract for all six Person APIs (C#, C++, Java, Node,
+//          Python, Go). Do not fork this file per language.
+// Persistence mapping (Postgres persons_* — do NOT rename proto fields):
+//   gender           -> column sex
+//   job_category     -> column occupation
+//   embedding_vector -> column embedding (vector(384), L2 <->)
+//   has_passport     -> column has_passport (default false)
+//   birth_date       -> NOT stored; derive ISO date from age on read
+// Pagination: limit default 50 max 500; top_k default 10 max 100.
+// ============================================================================
+
+syntax = "proto3";
+
+// Package naming aligned with the monorepo structure
+package omnitest.polyglot.nexus;
+
+// Options for different language generators to keep namespaces clean
+option csharp_namespace = "OmniTest.Polyglot.Nexus.Shared.Proto";
+option java_package = "com.omnitest.polyglot.nexus.shared.proto";
+option java_outer_classname = "PersonServiceProto";
+option go_package = "github.com/omnitest/api-go/internal/gen;personpb";
+
+// ============================================================================
+// ENUMS (Categorical Data)
+// ============================================================================
+
+enum Sex {
+    SEX_UNSPECIFIED = 0;
+    SEX_MALE = 1;
+    SEX_FEMALE = 2;
+    SEX_BIGENDER = 3;
+    SEX_AGENDER = 4;
+}
+
+enum MaritalStatus {
+    MARITAL_STATUS_UNSPECIFIED = 0;
+    MARITAL_STATUS_SINGLE = 1;
+    MARITAL_STATUS_MARRIED = 2;
+    MARITAL_STATUS_DIVORCED = 3;
+    MARITAL_STATUS_WIDOWED = 4;
+    MARITAL_STATUS_SINGLE_PARENT = 5;
+}
+
+enum LivingPlace {
+    LIVING_PLACE_UNSPECIFIED = 0;
+    LIVING_PLACE_STUDIO = 1;
+    LIVING_PLACE_APARTMENT = 2;
+    LIVING_PLACE_HOUSE = 3;
+    LIVING_PLACE_VILLA = 4;
+    LIVING_PLACE_HOSTEL = 5;
+    LIVING_PLACE_DORM = 6;
+    LIVING_PLACE_HOTEL = 7;
+}
+
+enum Occupation {
+    OCCUPATION_UNSPECIFIED = 0;
+    OCCUPATION_JOB_SEEKER = 1;
+    OCCUPATION_JOBLESS = 2;
+    OCCUPATION_FULL_TIME = 3;
+    OCCUPATION_PART_TIME = 4;
+    OCCUPATION_STUDENT = 5;
+    OCCUPATION_HOUSEKEEPER = 6;
+}
+
+// ============================================================================
+// CORE ENTITIES
+// ============================================================================
+
+message Person {
+    string id = 1; // GUID/UUID
+    string first_name = 2;
+    string last_name = 3;
+    int32 age = 4;
+    string birth_date = 5; // e.g. "1990-01-01"
+    Sex gender = 6; 
+    MaritalStatus marital_status = 7;
+    int32 children_count = 8;
+    LivingPlace living_place = 9;
+    Occupation job_category = 10;
+    string national_code = 11;
+    bool has_passport = 12;
+    repeated float embedding_vector = 13; // For pgvector
+}
+
+// ============================================================================
+// REQUEST & RESPONSE MESSAGES
+// ============================================================================
+
+message CreatePersonRequest {
+    Person person = 1;
+}
+
+message CreatePersonResponse {
+    bool success = 1;
+    string message = 2;
+    string inserted_id = 3;
+}
+
+message ReadAllPersonsRequest {
+    int32 limit = 1; 
+    int32 offset = 2; 
+}
+
+message PersonListResponse {
+    repeated Person persons = 1;
+    int32 total_count = 2;
+}
+
+message VectorSearchRequest {
+    repeated float vector = 1; 
+    int32 top_k = 2; 
+}
+
+message FilterSearchRequest {
+    optional string first_name = 1;
+    optional string last_name = 2;
+    optional int32 min_age = 3;
+    optional int32 max_age = 4;
+    optional Sex gender = 5;
+    optional string national_code = 6;
+}
+
+// ============================================================================
+// SERVICE DEFINITION
+// ============================================================================
+
+service PersonService {
+    rpc CreatePerson(CreatePersonRequest) returns (CreatePersonResponse);
+    rpc ReadAllPersons(ReadAllPersonsRequest) returns (PersonListResponse);
+    rpc SearchByFilter(FilterSearchRequest) returns (PersonListResponse);
+    rpc SearchByVector(VectorSearchRequest) returns (PersonListResponse);
+}

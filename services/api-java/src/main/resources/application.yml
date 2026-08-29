@@ -1,0 +1,31 @@
+# ==============================================================================
+# File: services/api-java/src/main/resources/application.yml
+# Purpose: Configuration for Spring Boot, gRPC server, and Database.
+# Note: Specifically configured to target the `persons_java` independent table.
+# ==============================================================================
+
+server:
+  port: 8083 # Optional standard REST port, though gRPC is our primary entry
+
+spring:
+  application:
+    name: api-java
+  datasource:
+    # Changed omnitest_db to opn_db to match docker-compose.yml POSTGRES_DB
+    url: jdbc:postgresql://localhost:5432/opn_db 
+    username: opn_admin
+    password: opn_secret
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    # Create the persons_java table automatically if it does not exist
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+# gRPC Server Configuration (from net.devh.boot.grpc)
+grpc:
+  server:
+    port: 50053 # Dedicated gRPC port for the Java microservice
