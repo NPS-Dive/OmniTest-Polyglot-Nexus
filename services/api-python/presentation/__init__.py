@@ -1,0 +1,1 @@
+"""Presentation package: gRPC adapters."""

@@ -1,0 +1,12 @@
+# File: services/api-python/requirements.txt
+# Purpose: Runtime deps for the Python gRPC Person API.
+grpcio==1.66.1
+grpcio-tools==1.66.1
+grpcio-reflection==1.66.1
+protobuf==5.28.2
+sqlalchemy==2.0.35
+psycopg2-binary==2.9.9
+pgvector==0.3.4
+opentelemetry-api==1.27.0
+opentelemetry-sdk==1.27.0
+opentelemetry-exporter-otlp-proto-grpc==1.27.0

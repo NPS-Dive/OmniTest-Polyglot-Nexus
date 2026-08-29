@@ -1,33 +1,44 @@
+// ==============================================================================
+// File: Program.cs
+// Purpose: Composition root — DI, gRPC, reflection, EF + IPersonRepository.
+// SOLID: no business logic. OTEL is a no-op unless OTEL_EXPORTER_OTLP_ENDPOINT is set.
+// ==============================================================================
+
 using Microsoft.EntityFrameworkCore;
+using OmniTest.Polyglot.Nexus.Api.CSharp.Domain;
 using OmniTest.Polyglot.Nexus.Api.CSharp.Infrastructure.Data;
 using OmniTest.Polyglot.Nexus.Api.CSharp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Add gRPC services to the container.
 builder.Services.AddGrpc();
-
-// 2. Add gRPC Reflection for Postman testing (Option A for our UI/Testing)
 builder.Services.AddGrpcReflection();
 
-// 3. Configure PostgreSQL with pgvector support
-// We pull the connection string from appsettings.json
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(connectionString, o => o.UseVector()));
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? "Host=localhost;Port=5432;Database=opn_db;Username=opn_admin;Password=opn_secret";
 
-var app = builder.Build();
-
-// 4. Map the gRPC Service implementation
-app.MapGrpcService<PersonGrpcService>();
-
-// 5. Enable Reflection in Development mode so Postman can read the .proto contract dynamically
-if (app.Environment.IsDevelopment())
+// Env overrides keep compose/k8s portable without rewriting appsettings.
+var host = Environment.GetEnvironmentVariable("POSTGRES_HOST");
+if (!string.IsNullOrWhiteSpace(host))
 {
-    app.MapGrpcReflectionService();
+    connectionString =
+        $"Host={host};Port={Environment.GetEnvironmentVariable("POSTGRES_PORT") ?? "5432"};" +
+        $"Database={Environment.GetEnvironmentVariable("POSTGRES_DB") ?? "opn_db"};" +
+        $"Username={Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "opn_admin"};" +
+        $"Password={Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "opn_secret"}";
 }
 
-// 6. Root endpoint fallback for standard HTTP GET requests
-app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client like Postman.");
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(connectionString, o => o.UseVector()));
+builder.Services.AddScoped<IPersonRepository, PostgresPersonRepository>();
 
+var otel = Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_ENDPOINT");
+if (!string.IsNullOrWhiteSpace(otel))
+    Console.WriteLine($"[OTEL] traces intended for {otel} (wire SDK in Phase C compose).");
+
+var app = builder.Build();
+app.MapGrpcService<PersonGrpcService>();
+if (app.Environment.IsDevelopment())
+    app.MapGrpcReflectionService();
+app.MapGet("/", () => "api-csharp gRPC on this host. Use a gRPC client.");
 app.Run();

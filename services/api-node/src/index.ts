@@ -1,55 +1,44 @@
 /**
  * @file index.ts
- * @description Application Entry Point (Composition Root).
- * Wires up dependencies (DIP) and starts the infrastructure components.
+ * @description Composition root. Env-based Postgres + DIP wiring. Port 5079.
  */
 
 import pg from 'pg';
 import { PostgresPersonRepository } from './infrastructure/db/PostgresPersonRepository.js';
-import { PersonController } from './presentation/PersonController.js';
 import { GrpcServer } from './infrastructure/grpc/Server.js';
+import { PersonController } from './presentation/PersonController.js';
 
-async function bootstrap() {
-    console.log('Bootstrapping api-node service...');
-
-    // 1. Initialize Database Connection (Infrastructure)
-    // Connecting using the specific user/db for the Polyglot Nexus architecture
+async function bootstrap(): Promise<void> {
     const pool = new pg.Pool({
-        host: 'localhost',
-        port: 5432,
-        user: 'opn_admin',
-        password: 'opn_secret',
-        database: 'opn_db',
+        host: process.env.POSTGRES_HOST ?? 'localhost',
+        port: Number(process.env.POSTGRES_PORT ?? 5432),
+        user: process.env.POSTGRES_USER ?? 'opn_admin',
+        password: process.env.POSTGRES_PASSWORD ?? 'opn_secret',
+        database: process.env.POSTGRES_DB ?? 'opn_db'
     });
 
-    // Test DB connection on startup to fail fast if disconnected
     try {
         const client = await pool.connect();
-        console.log('[DB] Successfully connected to PostgreSQL.');
         client.release();
-    } catch (dbError) {
-        console.error('[DB] Failed to connect to PostgreSQL:', dbError);
+        console.log('[DB] connected (persons_node)');
+    } catch (error) {
+        console.error('[DB] connection failed', error);
         process.exit(1);
     }
 
-    // 2. Dependency Injection / Instantiation
-    // Inject DB pool into Repository (Data Access)
-    const personRepository = new PostgresPersonRepository(pool);
-    
-    // Inject Repository into Controller (Presentation layer decoupled from DB)
-    const personController = new PersonController(personRepository);
+    if (process.env.OTEL_EXPORTER_OTLP_ENDPOINT) {
+        console.log(`[OTEL] endpoint ${process.env.OTEL_EXPORTER_OTLP_ENDPOINT}`);
+    }
 
-    // 3. Initialize and Start the gRPC Server (Transport Layer)
-    const port = process.env.PORT || 5079;
-    const grpcServer = new GrpcServer(port);
-    
-    // Bind the controller and start listening
-    grpcServer.bindPersonService(personController);
-    grpcServer.start();
+    const repository = new PostgresPersonRepository(pool);
+    const controller = new PersonController(repository);
+    const port = process.env.PORT ?? 5079;
+    const server = new GrpcServer(port);
+    server.bindPersonService(controller);
+    server.start();
 }
 
-// Execute the bootstrap sequence
-bootstrap().catch((err) => {
-    console.error('Fatal error during bootstrap:', err);
+bootstrap().catch((error) => {
+    console.error('Fatal bootstrap error', error);
     process.exit(1);
 });

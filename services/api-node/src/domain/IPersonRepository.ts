@@ -1,38 +1,13 @@
-// services/api-node/src/domain/IPersonRepository.ts
-
 /**
- * Defines the allowed filters for searching persons.
- * Follows the Open/Closed Principle (OCP) by using optional properties.
+ * @file domain/IPersonRepository.ts
+ * @description DIP contract. Controller must not import pg.
  */
-export interface PersonFilter {
-    firstName?: string;
-    lastName?: string;
-    nationalCode?: string;
-}
 
-/**
- * Interface representing the data access contract for Person entities.
- * Follows the Dependency Inversion Principle (DIP).
- */
+import { Person, PersonFilter } from './Person.js';
+
 export interface IPersonRepository {
-    /**
-     * Creates a new person record.
-     */
-    create(person: any): Promise<any>;
-
-    /**
-     * Retrieves a paginated list of persons.
-     */
-    readAll(limit?: number, offset?: number): Promise<any[]>;
-
-    /**
-     * Searches for persons based on a vector embedding using pgvector.
-     */
-    searchByVector(vector: number[], limit: number): Promise<any[]>;
-    
-    /**
-     * Searches for persons based on specific text/value filters.
-     * @param filters - The filtering criteria (firstName, lastName, nationalCode)
-     */
-    searchByFilter(filters: PersonFilter): Promise<any[]>;
+    create(person: Person): Promise<Person>;
+    readAll(limit: number, offset: number): Promise<Person[]>;
+    searchByFilter(filters: PersonFilter, limit: number): Promise<Person[]>;
+    searchByVector(vector: number[], topK: number): Promise<Person[]>;
 }
