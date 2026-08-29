@@ -1,0 +1,95 @@
+{
+  "__comment": "File: shared/infrastructure/grafana/dashboards/test-comparison.json. Purpose: side-by-side p90/p95/p98 for k6 / performance runs. k6 remote-writes to Prometheus (see infrastructure README). Placeholder queries use k6_* names; they show No data until a run is exported.",
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "ms", "decimals": 2 }, "overrides": [] },
+      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 0 },
+      "id": 1,
+      "options": {
+        "legend": { "displayMode": "table", "placement": "right", "calcs": ["lastNotNull"] }
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.90, sum(rate(k6_grpc_req_duration_bucket[1m])) by (le, lang))",
+          "legendFormat": "{{lang}} p90",
+          "refId": "A"
+        },
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(k6_grpc_req_duration_bucket[1m])) by (le, lang))",
+          "legendFormat": "{{lang}} p95",
+          "refId": "B"
+        },
+        {
+          "expr": "histogram_quantile(0.98, sum(rate(k6_grpc_req_duration_bucket[1m])) by (le, lang))",
+          "legendFormat": "{{lang}} p98",
+          "refId": "C"
+        }
+      ],
+      "title": "k6 gRPC duration — p90 / p95 / p98 by LANG",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "ms" }, "overrides": [] },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 9 },
+      "id": 2,
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(k6_grpc_req_duration_bucket[1m])) by (le, lang))",
+          "legendFormat": "{{lang}}",
+          "refId": "A"
+        }
+      ],
+      "title": "p95 comparison (bar-friendly last value)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 9 },
+      "id": 3,
+      "targets": [
+        {
+          "expr": "sum(rate(k6_grpc_reqs[1m])) by (lang)",
+          "legendFormat": "{{lang}}",
+          "refId": "A"
+        }
+      ],
+      "title": "k6 request rate by language",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "percentunit" }, "overrides": [] },
+      "gridPos": { "h": 7, "w": 24, "x": 0, "y": 17 },
+      "id": 4,
+      "targets": [
+        {
+          "expr": "sum(rate(k6_grpc_reqs{status!=\"OK\"}[1m])) by (lang) / sum(rate(k6_grpc_reqs[1m])) by (lang)",
+          "legendFormat": "{{lang}} fail ratio",
+          "refId": "A"
+        }
+      ],
+      "title": "k6 fail ratio by language",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 39,
+  "tags": ["omnitest", "k6", "comparison"],
+  "templating": { "list": [] },
+  "time": { "from": "now-30m", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Test-run comparison — p90 / p95 / p98",
+  "uid": "opn-test-comparison",
+  "version": 1
+}

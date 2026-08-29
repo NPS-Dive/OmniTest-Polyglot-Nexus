@@ -1,0 +1,160 @@
+{
+  "__comment": "File: shared/infrastructure/grafana/dashboards/grpc-red.json. Purpose: live gRPC RED placeholders for the six Person APIs. Queries use OTEL Prometheus-exporter names (opn_ prefix from collector namespace). Panels stay useful even before APIs export — they show No data rather than break Grafana.",
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "liveNow": true,
+  "panels": [
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 0 },
+      "id": 1,
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "sum(rate(opn_rpc_server_duration_milliseconds_count{service_name=~\"api-cpp|api-python|api-java|api-go|api-csharp|api-node\"}[5m])) by (service_name)",
+          "legendFormat": "{{service_name}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Request rate — all six languages",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "percentunit" }, "overrides": [] },
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 0 },
+      "id": 2,
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "sum(rate(opn_rpc_server_duration_milliseconds_count{rpc_grpc_status_code!=\"0\"}[5m])) by (service_name) / sum(rate(opn_rpc_server_duration_milliseconds_count[5m])) by (service_name)",
+          "legendFormat": "{{service_name}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Error ratio — all six languages",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "ms" }, "overrides": [] },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 0 },
+      "id": 3,
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "histogram_quantile(0.95, sum(rate(opn_rpc_server_duration_milliseconds_bucket[5m])) by (le, service_name))",
+          "legendFormat": "{{service_name}} p95",
+          "refId": "A"
+        }
+      ],
+      "title": "Duration p95 — all six languages",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 8 },
+      "id": 10,
+      "targets": [
+        {
+          "expr": "sum(rate(opn_rpc_server_duration_milliseconds_count{service_name=\"api-cpp\"}[5m]))",
+          "legendFormat": "cpp :50051",
+          "refId": "A"
+        }
+      ],
+      "title": "C++ rate (api-cpp / persons_cpp)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
+      "gridPos": { "h": 6, "w": 8, "x": 8, "y": 8 },
+      "id": 11,
+      "targets": [
+        {
+          "expr": "sum(rate(opn_rpc_server_duration_milliseconds_count{service_name=\"api-python\"}[5m]))",
+          "legendFormat": "python :50052",
+          "refId": "A"
+        }
+      ],
+      "title": "Python rate (api-python / persons_python)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
+      "gridPos": { "h": 6, "w": 8, "x": 16, "y": 8 },
+      "id": 12,
+      "targets": [
+        {
+          "expr": "sum(rate(opn_rpc_server_duration_milliseconds_count{service_name=\"api-java\"}[5m]))",
+          "legendFormat": "java :50053",
+          "refId": "A"
+        }
+      ],
+      "title": "Java rate (api-java / persons_java)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 14 },
+      "id": 13,
+      "targets": [
+        {
+          "expr": "sum(rate(opn_rpc_server_duration_milliseconds_count{service_name=\"api-go\"}[5m]))",
+          "legendFormat": "go :50054",
+          "refId": "A"
+        }
+      ],
+      "title": "Go rate (api-go / persons_golang)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
+      "gridPos": { "h": 6, "w": 8, "x": 8, "y": 14 },
+      "id": 14,
+      "targets": [
+        {
+          "expr": "sum(rate(opn_rpc_server_duration_milliseconds_count{service_name=\"api-csharp\"}[5m]))",
+          "legendFormat": "csharp :5078",
+          "refId": "A"
+        }
+      ],
+      "title": "C# rate (api-csharp / persons_csharp)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
+      "gridPos": { "h": 6, "w": 8, "x": 16, "y": 14 },
+      "id": 15,
+      "targets": [
+        {
+          "expr": "sum(rate(opn_rpc_server_duration_milliseconds_count{service_name=\"api-node\"}[5m]))",
+          "legendFormat": "node :5079",
+          "refId": "A"
+        }
+      ],
+      "title": "Node rate (api-node / persons_node)",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 39,
+  "tags": ["omnitest", "grpc", "red"],
+  "templating": { "list": [] },
+  "time": { "from": "now-15m", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "gRPC RED — six languages",
+  "uid": "opn-grpc-red",
+  "version": 1
+}

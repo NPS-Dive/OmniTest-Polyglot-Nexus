@@ -1,7 +1,8 @@
 # ==============================================================================
 # File: shared/infrastructure/docker-compose.yml
-# Purpose: Local platform stack. Phase A = Postgres+pgvector only.
-# Later phases append otel-collector, prometheus, grafana, tempo in this file.
+# Purpose: Local platform stack. Postgres+pgvector plus OTEL, Prometheus,
+#          Grafana, and Tempo (Phase C). APIs stay on the host; they export
+#          to localhost:4317 / :4318.
 # SOLID: SRP per service. Init SQL lives in data/vector-store (01-05 only).
 # Existing pg_data: init scripts will NOT re-run. Use
 # data/vector-store/migrations/migrate_add_golang.sql instead of wiping the volume.
@@ -23,6 +24,89 @@ services:
       - ../../data/vector-store:/docker-entrypoint-initdb.d
       # Server COPY in 03_seed_data.sql reads this exact path
       - ../../data/master_seed.csv:/master_seed.csv
+    networks:
+      - opn
+
+  # OTLP intake for the six gRPC APIs and optional k6 OTLP. Forwards traces
+  # to Tempo and scrapable metrics to Prometheus (exporter :8889).
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.114.0
+    container_name: opn-otel-collector
+    command: ["--config=/etc/otelcol/config.yaml"]
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otelcol/config.yaml:ro
+    ports:
+      - "4317:4317"   # OTLP gRPC
+      - "4318:4318"   # OTLP HTTP
+      - "8889:8889"   # Prometheus exporter (scraped by prometheus)
+    depends_on:
+      - tempo
+    networks:
+      - opn
+
+  # Metrics store. Remote-write receiver is on so k6 can push
+  # experimental-prometheus-rw without a sidecar.
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    container_name: opn-prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.enable-remote-write-receiver
+      - --web.enable-lifecycle
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prom_data:/prometheus
+    ports:
+      - "9090:9090"
+    depends_on:
+      - otel-collector
+    networks:
+      - opn
+
+  # Traces. OTLP is internal only (collector forwards). UI query port :3200.
+  tempo:
+    image: grafana/tempo:2.6.1
+    container_name: opn-tempo
+    command: ["-config.file=/etc/tempo.yaml"]
+    volumes:
+      - ./tempo.yaml:/etc/tempo.yaml:ro
+      - tempo_data:/var/tempo
+    ports:
+      - "3200:3200"
+    networks:
+      - opn
+
+  # Dashboards. Anonymous Admin AND admin/admin so either login style works.
+  grafana:
+    image: grafana/grafana:11.2.2
+    container_name: opn-grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_NAME: Main Org.
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
+      GF_USERS_DEFAULT_THEME: dark
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/grpc-red.json
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana_data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+      - tempo
+    networks:
+      - opn
+
+networks:
+  opn:
+    name: opn-net
 
 volumes:
   pg_data:
+  prom_data:
+  tempo_data:
+  grafana_data:

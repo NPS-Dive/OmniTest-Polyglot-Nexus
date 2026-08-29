@@ -1,0 +1,46 @@
+{
+  "_comment": "File: apps/benchmark-runner/config/services.json. Purpose: language key → gRPC host:port + table. SOLID: SRP — addressing only; runners and k6 consume this map. Do not add secrets here.",
+  "languages": {
+    "cpp": {
+      "host": "127.0.0.1",
+      "port": 50051,
+      "table": "persons_cpp",
+      "serviceName": "api-cpp"
+    },
+    "python": {
+      "host": "127.0.0.1",
+      "port": 50052,
+      "table": "persons_python",
+      "serviceName": "api-python"
+    },
+    "java": {
+      "host": "127.0.0.1",
+      "port": 50053,
+      "table": "persons_java",
+      "serviceName": "api-java"
+    },
+    "go": {
+      "host": "127.0.0.1",
+      "port": 50054,
+      "table": "persons_golang",
+      "serviceName": "api-go"
+    },
+    "csharp": {
+      "host": "127.0.0.1",
+      "port": 5078,
+      "table": "persons_csharp",
+      "serviceName": "api-csharp"
+    },
+    "node": {
+      "host": "127.0.0.1",
+      "port": 5079,
+      "table": "persons_node",
+      "serviceName": "api-node"
+    }
+  },
+  "grpc": {
+    "packageService": "omnitest.polyglot.nexus.PersonService",
+    "protoRelPath": "shared/proto/person_service.proto",
+    "protoImportRelPath": "shared/proto"
+  }
+}

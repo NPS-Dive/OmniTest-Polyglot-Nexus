@@ -1,0 +1,35 @@
+# ==============================================================================
+# File: shared/infrastructure/grafana/provisioning/datasources/datasources.yml
+# Purpose: Auto-provision Prometheus + Tempo so Grafana is usable on first boot.
+# SOLID: SRP — datasource wiring only. Dashboards are a separate provider.
+# ==============================================================================
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    uid: prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: true
+    jsonData:
+      timeInterval: 15s
+      httpMethod: POST
+
+  - name: Tempo
+    uid: tempo
+    type: tempo
+    access: proxy
+    url: http://tempo:3200
+    editable: true
+    jsonData:
+      httpMethod: GET
+      tracesToMetrics:
+        datasourceUid: prometheus
+      serviceMap:
+        datasourceUid: prometheus
+      nodeGraph:
+        enabled: true
+      lokiSearch:
+        datasourceUid: ""
