@@ -5,7 +5,7 @@ import warnings
 
 import person_service_pb2 as person__service__pb2
 
-GRPC_GENERATED_VERSION = '1.81.1'
+GRPC_GENERATED_VERSION = '1.83.1'
 GRPC_VERSION = grpc.__version__
 _version_not_supported = False
 
@@ -27,9 +27,7 @@ if _version_not_supported:
 
 class PersonServiceStub:
     """============================================================================
-
     SERVICE DEFINITION
-
     ============================================================================
 
     """
@@ -64,41 +62,31 @@ class PersonServiceStub:
 
 class PersonServiceServicer:
     """============================================================================
-
     SERVICE DEFINITION
-
     ============================================================================
 
     """
 
     def CreatePerson(self, request, context):
-        """1. Write: Insert data
-
-        """
+        """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def ReadAllPersons(self, request, context):
-        """2. Read: Paginated retrieval
-
-        """
+        """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def SearchByFilter(self, request, context):
-        """3. Search: Traditional SQL filtering
-
-        """
+        """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def SearchByVector(self, request, context):
-        """4. AI Search: Vector similarity (HNSW index)
-
-        """
+        """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -136,9 +124,7 @@ def add_PersonServiceServicer_to_server(servicer, server):
  # This class is part of an EXPERIMENTAL API.
 class PersonService:
     """============================================================================
-
     SERVICE DEFINITION
-
     ============================================================================
 
     """

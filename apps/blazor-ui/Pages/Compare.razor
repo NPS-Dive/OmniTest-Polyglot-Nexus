@@ -1,0 +1,114 @@
+@page "/compare"
+@* File: apps/blazor-ui/Pages/Compare.razor — latest report JSON from orchestrator. *@
+@inject OrchestratorApi Api
+@using System.Text.Json
+
+<PageTitle>Compare</PageTitle>
+<h1>Latest report JSON</h1>
+<p class="muted">GET <code>/reports/latest</code>. Empty arrays mean history files still have no runs (expected after scaffolding).</p>
+
+<div class="row">
+    <button class="primary" disabled="@_busy" @onclick="LoadAsync">Reload</button>
+    <a href="http://localhost:3000/d/opn-test-comparison" target="_blank" rel="noopener">Open Grafana comparison dashboard</a>
+</div>
+
+@if (_rows.Count == 0)
+{
+    <p class="muted">@_message</p>
+}
+else
+{
+    <table>
+        <thead>
+            <tr>
+                <th>bucket</th>
+                <th>test_name</th>
+                <th>language</th>
+                <th>p90</th>
+                <th>p95</th>
+                <th>p98</th>
+                <th>ttl</th>
+                <th>pass</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var row in _rows)
+            {
+                <tr>
+                    <td>@row.Bucket</td>
+                    <td>@row.TestName</td>
+                    <td>@row.Language</td>
+                    <td>@row.P90</td>
+                    <td>@row.P95</td>
+                    <td>@row.P98</td>
+                    <td>@row.Ttl</td>
+                    <td>@row.Pass</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<pre>@_raw</pre>
+
+@code {
+    private sealed record Row(string Bucket, string TestName, string Language, string P90, string P95, string P98, string Ttl, string Pass);
+
+    private readonly List<Row> _rows = new();
+    private string _raw = "";
+    private string _message = "Click Reload after the orchestrator is up.";
+    private bool _busy;
+
+    protected override Task OnInitializedAsync() => LoadAsync();
+
+    private async Task LoadAsync()
+    {
+        _busy = true;
+        _rows.Clear();
+        try
+        {
+            var data = await Api.GetLatestReportsAsync();
+            _raw = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
+            if (data is null)
+            {
+                _message = "Null response.";
+                return;
+            }
+            Flatten("manual", data.Manual);
+            Flatten("automated", data.Automated);
+            Flatten("performance", data.Performance);
+            if (_rows.Count == 0)
+            {
+                _message = "No history rows yet. Run a PowerShell test first.";
+            }
+        }
+        catch (Exception ex)
+        {
+            _message = ex.Message;
+            _raw = ex.ToString();
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+
+    private void Flatten(string bucket, List<Dictionary<string, object?>> items)
+    {
+        foreach (var d in items)
+        {
+            _rows.Add(new Row(
+                bucket,
+                Get(d, "test_name"),
+                Get(d, "language"),
+                Get(d, "p90_ms"),
+                Get(d, "p95_ms"),
+                Get(d, "p98_ms"),
+                Get(d, "ttl_ms"),
+                Get(d, "pass")));
+        }
+    }
+
+    private static string Get(Dictionary<string, object?> d, string key) =>
+        d.TryGetValue(key, out var v) && v is not null ? v.ToString() ?? "" : "";
+}

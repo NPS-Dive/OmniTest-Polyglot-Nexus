@@ -1,0 +1,30 @@
+{
+  "_comment": "File: services/ai-agents/openclaw/openclaw.json.example. Purpose: gateway-only config. Copy to a private openclaw.json. Do not store channel secrets in git. SOLID: OpenClaw owns short session + routing; Hermes owns long-term memory.",
+  "gateway": {
+    "bind": "127.0.0.1",
+    "historyLimit": 6,
+    "publicEntry": true
+  },
+  "routing": {
+    "light": ["ports", "grafana", "how-to-run-tc-func-001", "table-map"],
+    "heavyDelegate": {
+      "command": "python",
+      "args": [
+        "services/ai-agents/bridge/ask_hermes.py",
+        "--user-id",
+        "{{userId}}",
+        "--channel",
+        "{{channel}}",
+        "{{message}}"
+      ]
+    }
+  },
+  "skills": {
+    "ask_hermes": "services/ai-agents/bridge/ask_hermes.py",
+    "omnitest_mcp": "services/ai-agents/mcp/server.py"
+  },
+  "notes": [
+    "OpenClaw does not call LangGraph directly.",
+    "Do not duplicate Hermes memory in this file."
+  ]
+}

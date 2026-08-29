@@ -16,6 +16,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'ReportWriter.ps1')
 
 # Catalog: TestId → RPC + payload. Thin scripts under manual/ call this file.
 $Catalog = @{

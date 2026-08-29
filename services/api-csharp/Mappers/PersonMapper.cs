@@ -13,7 +13,7 @@ namespace OmniTest.Polyglot.Nexus.Api.CSharp.Mappers;
 /// <summary>Static mapper. No I/O (SRP).</summary>
 public static class PersonMapper
 {
-    public static ProtoPerson ToProto(Domain.Person person)
+    public static ProtoPerson ToProto(Person person)
     {
         var year = DateTime.UtcNow.Year - Math.Max(person.Age, 0);
         var msg = new ProtoPerson
@@ -36,7 +36,7 @@ public static class PersonMapper
         return msg;
     }
 
-    public static Domain.Person FromProto(ProtoPerson msg) => new()
+    public static Person FromProto(ProtoPerson msg) => new()
     {
         FirstName = msg.FirstName,
         LastName = msg.LastName,

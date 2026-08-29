@@ -1,0 +1,5 @@
+# File: apps/benchmark-runner/orchestrator/requirements.txt
+# Purpose: HTTP orchestrator deps. Pin loosely for local Windows pip.
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+pydantic>=2.8.0

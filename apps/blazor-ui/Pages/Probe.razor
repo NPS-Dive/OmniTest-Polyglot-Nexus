@@ -1,0 +1,52 @@
+@page "/probe"
+@* File: apps/blazor-ui/Pages/Probe.razor — Create / ReadAll / Filter / Vector via orchestrator. *@
+@inject OrchestratorApi Api
+
+<PageTitle>Probe</PageTitle>
+<h1>Probe RPCs</h1>
+<p class="muted">Calls orchestrator <code>POST /probe</code>, which runs <code>Invoke-FunctionalRpc.ps1</code> (grpcurl). WASM never talks gRPC directly.</p>
+
+<div class="row">
+    <label>
+        Language
+        <select @bind="_language">
+            @foreach (var lang in _langs)
+            {
+                <option value="@lang">@lang</option>
+            }
+        </select>
+    </label>
+</div>
+<div class="row">
+    <button class="primary" disabled="@_busy" @onclick='() => ProbeAsync("CreatePerson")'>Create</button>
+    <button class="primary" disabled="@_busy" @onclick='() => ProbeAsync("ReadAllPersons")'>ReadAll</button>
+    <button class="primary" disabled="@_busy" @onclick='() => ProbeAsync("SearchByFilter")'>Filter</button>
+    <button class="primary" disabled="@_busy" @onclick='() => ProbeAsync("SearchByVector")'>Vector</button>
+</div>
+
+<pre>@_output</pre>
+
+@code {
+    private readonly string[] _langs = ["cpp", "python", "java", "go", "csharp", "node"];
+    private string _language = "go";
+    private string _output = "Pick a language and an RPC.";
+    private bool _busy;
+
+    private async Task ProbeAsync(string rpc)
+    {
+        _busy = true;
+        _output = $"Calling {rpc} on {_language}…";
+        try
+        {
+            _output = await Api.ProbeAsync(_language, rpc);
+        }
+        catch (Exception ex)
+        {
+            _output = ex.Message;
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+}

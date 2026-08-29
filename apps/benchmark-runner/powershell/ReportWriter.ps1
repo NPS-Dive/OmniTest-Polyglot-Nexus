@@ -150,5 +150,5 @@ function Write-OpnCliSummary {
         [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [object[]]$Results
     )
-    $Results | Format-Table -AutoSize test_name, language, pass, ttl_ms, p90_ms, p95_ms, p98_ms, error_message
+    $Results | Format-Table -AutoSize test_name, language, pass, ttl_ms, p90_ms, p95_ms, p98_ms, error_message | Out-Host
 }

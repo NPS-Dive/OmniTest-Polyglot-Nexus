@@ -1,0 +1,68 @@
+@page "/"
+@* File: apps/blazor-ui/Pages/Home.razor — service TCP status from orchestrator. *@
+@inject OrchestratorApi Api
+
+<PageTitle>Home — services</PageTitle>
+<h1>Service status</h1>
+<p class="muted">TCP check via orchestrator <code>GET /services/status</code> (not a full gRPC handshake). Start APIs on the host; Postgres is in compose.</p>
+
+<div class="row">
+    <button class="primary" disabled="@_busy" @onclick="RefreshAsync">Refresh</button>
+    @if (!string.IsNullOrEmpty(_error))
+    {
+        <span class="badge down">@_error</span>
+    }
+</div>
+
+<div class="grid">
+    @if (_status?.Services is { Count: > 0 })
+    {
+        @foreach (var s in _status.Services)
+        {
+            <div class="card">
+                <strong>@s.Language</strong>
+                <div class="muted">@s.Host:@s.Port · @s.Table</div>
+                <div style="margin-top:0.5rem">
+                    @if (s.Up)
+                    {
+                        <span class="badge up">up</span>
+                    }
+                    else
+                    {
+                        <span class="badge down">down</span>
+                    }
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <p class="muted">No data yet. Is the orchestrator running on :5081?</p>
+    }
+</div>
+
+@code {
+    private ServiceStatusResponse? _status;
+    private string? _error;
+    private bool _busy;
+
+    protected override Task OnInitializedAsync() => RefreshAsync();
+
+    private async Task RefreshAsync()
+    {
+        _busy = true;
+        _error = null;
+        try
+        {
+            _status = await Api.GetStatusAsync();
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+}

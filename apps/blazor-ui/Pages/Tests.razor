@@ -1,0 +1,61 @@
+@page "/tests"
+@* File: apps/blazor-ui/Pages/Tests.razor — run one catalog test or the full loop. *@
+@inject OrchestratorApi Api
+
+<PageTitle>Tests</PageTitle>
+<h1>Run tests</h1>
+<p class="muted">POST <code>/tests/run</code> and <code>/tests/run-all</code>. Run-all can take several minutes.</p>
+
+<div class="row">
+    <label>
+        TestId
+        <select @bind="_testId">
+            @foreach (var id in _ids)
+            {
+                <option value="@id">@id</option>
+            }
+        </select>
+    </label>
+    <label>
+        Language
+        <select @bind="_language">
+            @foreach (var lang in _langs)
+            {
+                <option value="@lang">@lang</option>
+            }
+        </select>
+    </label>
+    <button class="primary" disabled="@_busy" @onclick="RunOneAsync">Run one</button>
+    <button disabled="@_busy" @onclick="RunAllAsync">Run all</button>
+</div>
+
+<pre>@_output</pre>
+
+@code {
+    private readonly string[] _langs = ["cpp", "python", "java", "go", "csharp", "node"];
+    private readonly string[] _ids =
+    [
+        "TC-FUNC-001", "TC-FUNC-002", "TC-FUNC-003", "TC-FUNC-004",
+        "TC-EDGE-001", "TC-EDGE-002", "TC-EDGE-003", "TC-EDGE-004"
+    ];
+    private string _testId = "TC-FUNC-001";
+    private string _language = "go";
+    private string _output = "";
+    private bool _busy;
+
+    private async Task RunOneAsync()
+    {
+        _busy = true;
+        try { _output = await Api.RunTestAsync(_testId, _language); }
+        catch (Exception ex) { _output = ex.Message; }
+        finally { _busy = false; }
+    }
+
+    private async Task RunAllAsync()
+    {
+        _busy = true;
+        try { _output = await Api.RunAllAsync(); }
+        catch (Exception ex) { _output = ex.Message; }
+        finally { _busy = false; }
+    }
+}

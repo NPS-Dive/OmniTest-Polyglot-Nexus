@@ -1,0 +1,37 @@
+/* File: apps/blazor-ui/wwwroot/css/app.css — dashboard chrome (no Bootstrap). */
+:root {
+  --bg: #0f1419;
+  --panel: #1a222c;
+  --text: #e8eef4;
+  --muted: #93a4b5;
+  --accent: #3d9cf0;
+  --ok: #3ecf8e;
+  --bad: #e85d5d;
+  --line: #2a3542;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); font-family: "Segoe UI", system-ui, sans-serif; }
+a { color: var(--accent); }
+.shell { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
+nav.side { background: var(--panel); padding: 1.25rem 1rem; border-right: 1px solid var(--line); }
+nav.side h2 { font-size: 1rem; margin: 0 0 1rem; letter-spacing: 0.04em; }
+nav.side a { display: block; padding: 0.45rem 0.35rem; text-decoration: none; color: var(--text); }
+nav.side a.active { color: var(--accent); }
+main.content { padding: 1.5rem 2rem; }
+h1 { font-size: 1.45rem; margin-top: 0; }
+.muted { color: var(--muted); }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.85rem; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 0.9rem 1rem; }
+.badge { display: inline-block; padding: 0.15rem 0.45rem; border-radius: 999px; font-size: 0.75rem; }
+.badge.up { background: #163d2c; color: var(--ok); }
+.badge.down { background: #3d1a1a; color: var(--bad); }
+button, select { background: #243140; color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 0.45rem 0.75rem; cursor: pointer; }
+button.primary { background: #1d4f7a; border-color: #2d7ab8; }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+th, td { border-bottom: 1px solid var(--line); padding: 0.4rem 0.5rem; text-align: left; }
+pre { background: #0b1015; padding: 0.75rem; overflow: auto; border-radius: 8px; font-size: 0.8rem; }
+.row { display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center; margin: 0.75rem 0; }
+.boot { padding: 2rem; color: var(--muted); }
+#blazor-error-ui { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: #5c1f1f; padding: 0.6rem 1rem; }
+#blazor-error-ui.show { display: block; }
