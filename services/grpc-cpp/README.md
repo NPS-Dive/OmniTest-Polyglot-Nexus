@@ -1,4 +1,4 @@
-# C++ Person gRPC service (`api-cpp`)
+# C++ Person gRPC service (`grpc-cpp`)
 
 gRPC Person API for OmniTest-Polyglot-Nexus. Listens on **0.0.0.0:50051** and reads/writes **only** `persons_cpp` in `opn_db`.
 
@@ -40,7 +40,7 @@ cmake -S . -B build `
   -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT\scripts\buildsystems\vcpkg.cmake" `
   -DCMAKE_BUILD_TYPE=Release
 cmake --build build --config Release
-.\build\Release\api_cpp.exe
+.\build\Release\grpc_cpp.exe
 ```
 
 If you prefer a manifest, create `vcpkg.json` next to this README with dependencies `grpc`, `protobuf`, and `libpqxx`, then configure with the same toolchain file (`VCPKG_FEATURE_FLAGS=manifests` is the default in current vcpkg).
@@ -63,7 +63,7 @@ Arch: `pacman -S cmake gcc protobuf grpc libpqxx postgresql-libs`.
 ```bash
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j
-./build/api_cpp
+./build/grpc_cpp
 ```
 
 Fedora/RHEL package names differ (`grpc-devel`, `protobuf-devel`, `libpqxx-devel`); the CMake `find_package` names stay `Protobuf`, `gRPC`, and `pqxx`.

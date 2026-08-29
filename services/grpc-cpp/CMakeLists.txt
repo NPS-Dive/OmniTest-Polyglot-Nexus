@@ -1,6 +1,6 @@
 # ============================================================================
-# File: services/api-cpp/CMakeLists.txt
-# Purpose: Build the C++ Person gRPC service (api_cpp) and generate C++ stubs
+# File: services/grpc-cpp/CMakeLists.txt
+# Purpose: Build the C++ Person gRPC service (grpc_cpp) and generate C++ stubs
 #          from shared/proto/person_service.proto (package omnitest.polyglot.nexus).
 # SOLID role: build composition — every src/**/*.cpp is compiled, not just main.cpp.
 # Dependencies: Protobuf, gRPC, libpqxx (pqxx). Optional vcpkg toolchain on Windows.
@@ -84,13 +84,13 @@ file(GLOB_RECURSE APP_SOURCES CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
 )
 
-add_executable(api_cpp
+add_executable(grpc_cpp
     ${APP_SOURCES}
     ${PROTO_SRCS}
     ${GRPC_SRCS}
 )
 
-target_include_directories(api_cpp PRIVATE
+target_include_directories(grpc_cpp PRIVATE
     "${CMAKE_CURRENT_BINARY_DIR}"
     "${CMAKE_CURRENT_SOURCE_DIR}/src"
 )
@@ -101,7 +101,7 @@ else()
     set(OPN_PQXX_LIB pqxx)
 endif()
 
-target_link_libraries(api_cpp PRIVATE
+target_link_libraries(grpc_cpp PRIVATE
     gRPC::grpc++
     protobuf::libprotobuf
     ${OPN_PQXX_LIB}

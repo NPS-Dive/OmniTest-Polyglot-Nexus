@@ -1,4 +1,4 @@
-# File: services/api-python/requirements.txt
+# File: services/grpc-python/requirements.txt
 # Purpose: Runtime deps for the Python gRPC Person API.
 grpcio==1.66.1
 grpcio-tools==1.66.1

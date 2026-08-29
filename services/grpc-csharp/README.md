@@ -1,6 +1,8 @@
-# api-csharp
+# grpc-csharp
 
 ASP.NET Core gRPC Person service on **Kestrel 5078**, table **`persons_csharp` only**.
+
+The folder is `grpc-csharp`. The .NET assembly/namespace stays `OmniTest.Polyglot.Nexus.Api.CSharp` so existing project files do not need a C# rename.
 
 ## Layers
 
@@ -11,7 +13,7 @@ ASP.NET Core gRPC Person service on **Kestrel 5078**, table **`persons_csharp` o
 - `Program.cs` — composition root
 
 ```powershell
-cd services/api-csharp
+cd services/grpc-csharp
 dotnet run
 ```
 

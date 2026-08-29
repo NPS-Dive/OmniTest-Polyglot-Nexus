@@ -1,5 +1,5 @@
 // ============================================================================
-// File: services/api-java/src/main/java/com/omnitest/apijava/ApiJavaApplication.java
+// File: services/grpc-java/src/main/java/com/omnitest/apijava/ApiJavaApplication.java
 // Purpose: Spring Boot composition root. Wires JDBC, gRPC, and optional OTEL.
 // SOLID: SRP — bootstrap only. No SQL and no proto mapping live here.
 // Dependencies: Spring Boot autoconfig. JPA is intentionally not on the classpath.

@@ -1,5 +1,5 @@
 // ============================================================================
-// File: services/api-java/src/main/java/com/omnitest/apijava/domain/repository/PersonRepository.java
+// File: services/grpc-java/src/main/java/com/omnitest/apijava/domain/repository/PersonRepository.java
 // Purpose: Persistence port for Person (DIP). gRPC depends on this, not JdbcTemplate.
 // SOLID: ISP — four RPCs map to four methods; OCP — swap Postgres for a fake.
 // Dependencies: domain.Person / PersonFilter. Implemented by infrastructure/db.

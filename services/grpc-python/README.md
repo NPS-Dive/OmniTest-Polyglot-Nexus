@@ -1,4 +1,4 @@
-# api-python
+# grpc-python
 
 gRPC Person service on **port 50052**, table **`persons_python` only**.
 
@@ -15,7 +15,7 @@ gRPC Person service on **port 50052**, table **`persons_python` only**.
 ## Run
 
 ```powershell
-cd services/api-python
+cd services/grpc-python
 pip install -r requirements.txt
 python generate_proto.py
 python main.py

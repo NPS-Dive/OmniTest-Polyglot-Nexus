@@ -1,6 +1,6 @@
 <!-- 
 ==============================================================================
-File: services/api-csharp/OmniTest.Polyglot.Nexus.Api.CSharp.csproj
+File: services/grpc-csharp/OmniTest.Polyglot.Nexus.Api.CSharp.csproj
 Purpose: Project configuration, NuGet dependencies, and Protobuf compilation.
 ============================================================================== 
 -->

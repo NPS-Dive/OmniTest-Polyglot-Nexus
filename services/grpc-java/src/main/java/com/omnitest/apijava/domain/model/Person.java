@@ -1,5 +1,5 @@
 // ============================================================================
-// File: services/api-java/src/main/java/com/omnitest/apijava/domain/model/Person.java
+// File: services/grpc-java/src/main/java/com/omnitest/apijava/domain/model/Person.java
 // Purpose: Persistence-shaped Person entity for persons_java (SQL columns, not proto).
 // SOLID: SRP — data + pagination clamps only. No SQL, no proto, no I/O.
 // Dependencies: none (stdlib). Presentation maps proto; infrastructure maps rows.

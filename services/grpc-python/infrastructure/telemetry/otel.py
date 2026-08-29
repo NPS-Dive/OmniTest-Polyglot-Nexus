@@ -11,7 +11,7 @@ import os
 logger = logging.getLogger(__name__)
 
 
-def setup_telemetry(service_name: str = "api-python") -> None:
+def setup_telemetry(service_name: str = "grpc-python") -> None:
     """Attach OTLP gRPC exporter when the collector URL is present."""
     endpoint = os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT")
     if not endpoint:

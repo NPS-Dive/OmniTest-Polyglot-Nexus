@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   ==============================================================================
-  File: services/api-java/pom.xml
+  File: services/grpc-java/pom.xml
   Purpose: Maven build for the Java Spring Boot gRPC Person service.
   Architecture: Clean Architecture. JDBC + pgvector only — no JPA / Hibernate.
   Proto: ../../shared/proto/person_service.proto
@@ -21,9 +21,9 @@
     </parent>
 
     <groupId>com.omnitest</groupId>
-    <artifactId>api-java</artifactId>
+    <artifactId>grpc-java</artifactId>
     <version>1.0.0</version>
-    <name>api-java</name>
+    <name>grpc-java</name>
 
     <properties>
         <java.version>17</java.version>

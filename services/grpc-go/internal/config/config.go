@@ -1,5 +1,5 @@
 // ============================================================================
-// File: services/api-go/internal/config/config.go
+// File: services/grpc-go/internal/config/config.go
 // Purpose: Load listen port and Postgres settings from the environment.
 // SOLID: SRP — configuration only. Composition root calls Load(); nothing else.
 // Dependencies: os, strconv, net/url. Defaults match docker-compose opn_db.
@@ -34,7 +34,7 @@ type Config struct {
 	PostgresPassword string
 	// PostgresSSLMode is POSTGRES_SSLMODE (default disable) for local Docker.
 	PostgresSSLMode string
-	// ServiceName is OTEL_SERVICE_NAME (default api-go).
+	// ServiceName is OTEL_SERVICE_NAME (default grpc-go).
 	ServiceName string
 }
 
@@ -49,7 +49,7 @@ func Load() Config {
 		PostgresUser:     envOr("POSTGRES_USER", "opn_admin"),
 		PostgresPassword: envOr("POSTGRES_PASSWORD", "opn_secret"),
 		PostgresSSLMode:  envOr("POSTGRES_SSLMODE", "disable"),
-		ServiceName:      envOr("OTEL_SERVICE_NAME", "api-go"),
+		ServiceName:      envOr("OTEL_SERVICE_NAME", "grpc-go"),
 	}
 }
 

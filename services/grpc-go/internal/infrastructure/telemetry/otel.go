@@ -1,5 +1,5 @@
 // ============================================================================
-// File: services/api-go/internal/infrastructure/telemetry/otel.go
+// File: services/grpc-go/internal/infrastructure/telemetry/otel.go
 // Purpose: Optional OpenTelemetry setup. No-op unless OTEL_EXPORTER_OTLP_ENDPOINT
 //          is set, so local `go run` stays quiet without a collector.
 // SOLID: SRP — telemetry bootstrap only. Callers keep using otel.Tracer/Meter.
@@ -51,7 +51,7 @@ func Init(ctx context.Context, serviceName string) (ShutdownFunc, error) {
 		return noop, nil
 	}
 	if serviceName == "" {
-		serviceName = "api-go"
+		serviceName = "grpc-go"
 	}
 
 	res, err := resource.New(ctx,

@@ -1,9 +1,9 @@
-# api-node
+# grpc-node
 
 TypeScript gRPC Person service on **port 5079**, table **`persons_node` only**.
 
 ```powershell
-cd services/api-node
+cd services/grpc-node
 npm install
 npm start
 ```

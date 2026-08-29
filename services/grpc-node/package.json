@@ -1,5 +1,5 @@
 {
-  "name": "api-node",
+  "name": "grpc-node",
   "version": "1.0.0",
   "description": "gRPC Node.js Microservice for OmniTest-Polyglot-Nexus",
   "main": "index.js",

@@ -1,5 +1,5 @@
 // ============================================================================
-// File: services/api-java/src/main/java/com/omnitest/apijava/infrastructure/db/PostgresPersonRepositoryImpl.java
+// File: services/grpc-java/src/main/java/com/omnitest/apijava/infrastructure/db/PostgresPersonRepositoryImpl.java
 // Purpose: JdbcTemplate adapter for domain.PersonRepository against persons_java.
 // SOLID: DIP — satisfies the domain port; SRP — SQL only, no proto mapping.
 // Dependencies: Spring JDBC, OpenTelemetry tracer (no-op unless OTEL env set).
@@ -73,7 +73,7 @@ public class PostgresPersonRepositoryImpl implements PersonRepository {
 
     public PostgresPersonRepositoryImpl(JdbcTemplate jdbcTemplate, OpenTelemetry openTelemetry) {
         this.jdbcTemplate = jdbcTemplate;
-        this.tracer = openTelemetry.getTracer("api-java/db");
+        this.tracer = openTelemetry.getTracer("grpc-java/db");
     }
 
     /**

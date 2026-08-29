@@ -1,5 +1,5 @@
 # ==============================================================================
-# File: services/api-java/src/main/resources/application.yml
+# File: services/grpc-java/src/main/resources/application.yml
 # Purpose: Spring Boot, JDBC datasource, and gRPC listen port.
 # SOLID: SRP — configuration only. Schema is owned by data/vector-store SQL
 #        (ddl-auto is not used; JPA is not on the classpath).
@@ -11,7 +11,7 @@ server:
 
 spring:
   application:
-    name: ${OTEL_SERVICE_NAME:api-java}
+    name: ${OTEL_SERVICE_NAME:grpc-java}
   datasource:
     url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:${POSTGRES_DATABASE:opn_db}}?sslmode=${POSTGRES_SSLMODE:disable}
     username: ${POSTGRES_USER:opn_admin}

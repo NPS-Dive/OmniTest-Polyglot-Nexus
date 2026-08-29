@@ -1,5 +1,5 @@
 """
-File: services/api-python/main.py
+File: services/grpc-python/main.py
 Purpose: Composition root — telemetry, reflection, bind PersonGrpcService, port 50052.
 SOLID: no business logic here.
 """
@@ -24,7 +24,7 @@ from presentation.grpc.person_grpc_service import PersonGrpcService
 
 def serve() -> None:
     """Start insecure gRPC + reflection (Postman / grpcurl discovery)."""
-    setup_telemetry("api-python")
+    setup_telemetry("grpc-python")
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     person_service_pb2_grpc.add_PersonServiceServicer_to_server(PersonGrpcService(), server)
 
@@ -37,7 +37,7 @@ def serve() -> None:
     port = os.getenv("PORT", "50052")
     server.add_insecure_port(f"[::]:{port}")
     server.start()
-    logging.info("api-python listening on %s (table persons_python)", port)
+    logging.info("grpc-python listening on %s (table persons_python)", port)
     server.wait_for_termination()
 
 

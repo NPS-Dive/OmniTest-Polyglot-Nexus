@@ -1,5 +1,5 @@
 # ============================================================================
-# File: services/api-go/scripts/generate.ps1
+# File: services/grpc-go/scripts/generate.ps1
 # Purpose: Generate Go gRPC stubs from the shared Person proto.
 # SOLID: SRP — codegen only. Does not start the server or touch the database.
 # ============================================================================
@@ -69,10 +69,10 @@ Ensure `$(go env GOPATH)\bin` is on PATH.
     -I $ProtoDir `
     --go_out=$OutDir `
     --go_opt=paths=source_relative `
-    --go_opt=Mperson_service.proto=github.com/omnitest/api-go/internal/gen `
+    --go_opt=Mperson_service.proto=github.com/omnitest/grpc-go/internal/gen `
     --go-grpc_out=$OutDir `
     --go-grpc_opt=paths=source_relative `
-    --go-grpc_opt=Mperson_service.proto=github.com/omnitest/api-go/internal/gen `
+    --go-grpc_opt=Mperson_service.proto=github.com/omnitest/grpc-go/internal/gen `
     $ProtoFile
 
 if ($LASTEXITCODE -ne 0) {

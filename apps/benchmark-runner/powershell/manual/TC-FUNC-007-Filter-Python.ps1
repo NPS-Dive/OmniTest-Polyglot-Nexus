@@ -1,6 +1,6 @@
 # ==============================================================================
 # File: apps/benchmark-runner/powershell/manual/TC-FUNC-007-Filter-Python.ps1
-# Purpose: Thin case — SearchByFilter on api-python.
+# Purpose: Thin case — SearchByFilter on grpc-python.
 # SOLID: SRP — bind TestId + language only.
 # Gherkin: docs/gherkin/person-filter.feature (@functional)
 # ==============================================================================

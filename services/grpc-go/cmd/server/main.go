@@ -1,5 +1,5 @@
 // ============================================================================
-// File: services/api-go/cmd/server/main.go
+// File: services/grpc-go/cmd/server/main.go
 // Purpose: Composition root — env → telemetry → pool → repository → gRPC server.
 // SOLID: DIP — main is the only place that constructs concrete adapters.
 //         Domain and presentation never import pgx or listen sockets.
@@ -22,11 +22,11 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
-	"github.com/omnitest/api-go/internal/config"
-	personpb "github.com/omnitest/api-go/internal/gen"
-	"github.com/omnitest/api-go/internal/infrastructure/db"
-	"github.com/omnitest/api-go/internal/infrastructure/telemetry"
-	grpcsvc "github.com/omnitest/api-go/internal/presentation/grpc"
+	"github.com/omnitest/grpc-go/internal/config"
+	personpb "github.com/omnitest/grpc-go/internal/gen"
+	"github.com/omnitest/grpc-go/internal/infrastructure/db"
+	"github.com/omnitest/grpc-go/internal/infrastructure/telemetry"
+	grpcsvc "github.com/omnitest/grpc-go/internal/presentation/grpc"
 )
 
 // main wires the process and blocks until SIGINT/SIGTERM.
@@ -85,7 +85,7 @@ func main() {
 		}
 	}()
 
-	log.Printf("api-go PersonService listening on %s (table=persons_golang, otel=%v)", cfg.ListenAddr(), telemetry.Enabled())
+	log.Printf("grpc-go PersonService listening on %s (table=persons_golang, otel=%v)", cfg.ListenAddr(), telemetry.Enabled())
 	if err := server.Serve(lis); err != nil {
 		log.Fatalf("serve: %v", err)
 	}

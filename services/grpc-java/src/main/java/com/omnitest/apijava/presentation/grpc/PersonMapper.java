@@ -1,5 +1,5 @@
 // ============================================================================
-// File: services/api-java/src/main/java/com/omnitest/apijava/presentation/grpc/PersonMapper.java
+// File: services/grpc-java/src/main/java/com/omnitest/apijava/presentation/grpc/PersonMapper.java
 // Purpose: Bidirectional mapping between proto messages and domain.Person.
 // SOLID: SRP — translation only. No SQL. PersonGrpcService stays orchestration.
 // Dependencies: PersonServiceProto stubs, domain. Seed labels are lowercase with

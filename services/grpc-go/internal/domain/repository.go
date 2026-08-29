@@ -1,5 +1,5 @@
 // ============================================================================
-// File: services/api-go/internal/domain/repository.go
+// File: services/grpc-go/internal/domain/repository.go
 // Purpose: Persistence port for Person (DIP). gRPC depends on this, not pgx.
 // SOLID: ISP — four RPCs map to four methods; OCP — swap Postgres for a fake.
 // Dependencies: context, domain.Person. Implemented by infrastructure/db.

@@ -1,6 +1,6 @@
 # ==============================================================================
 # File: apps/benchmark-runner/powershell/manual/TC-FUNC-003-ReadAll-Csharp.ps1
-# Purpose: Thin case — ReadAllPersons on api-csharp (:5078 / persons_csharp).
+# Purpose: Thin case — ReadAllPersons on grpc-csharp (:5078 / persons_csharp).
 # SOLID: SRP — bind TestId + language only.
 # Gherkin: docs/gherkin/person-readall.feature (@functional)
 # ==============================================================================

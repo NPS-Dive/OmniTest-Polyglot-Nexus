@@ -1,5 +1,5 @@
 // ============================================================================
-// File: services/api-java/src/main/java/com/omnitest/apijava/infrastructure/telemetry/OtelConfig.java
+// File: services/grpc-java/src/main/java/com/omnitest/apijava/infrastructure/telemetry/OtelConfig.java
 // Purpose: Optional OpenTelemetry setup. No-op unless OTEL_EXPORTER_OTLP_ENDPOINT
 //          is set, so local `mvn spring-boot:run` stays quiet without a collector.
 // SOLID: SRP — telemetry bootstrap only. Callers keep using OpenTelemetry.getTracer.
@@ -72,7 +72,7 @@ public class OtelConfig {
             return OpenTelemetry.noop();
         }
 
-        String serviceName = envOr("OTEL_SERVICE_NAME", "api-java");
+        String serviceName = envOr("OTEL_SERVICE_NAME", "grpc-java");
         String collector = endpoint();
         String otlpUrl = "http://" + collector;
 

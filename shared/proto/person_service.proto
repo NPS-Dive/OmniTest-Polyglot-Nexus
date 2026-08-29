@@ -20,7 +20,7 @@ package omnitest.polyglot.nexus;
 option csharp_namespace = "OmniTest.Polyglot.Nexus.Shared.Proto";
 option java_package = "com.omnitest.polyglot.nexus.shared.proto";
 option java_outer_classname = "PersonServiceProto";
-option go_package = "github.com/omnitest/api-go/internal/gen;personpb";
+option go_package = "github.com/omnitest/grpc-go/internal/gen;personpb";
 
 // ============================================================================
 // ENUMS (Categorical Data)

@@ -1,10 +1,10 @@
-# api-java — Person gRPC service
+# grpc-java — Person gRPC service
 
 Java Spring Boot implementation of `omnitest.polyglot.nexus.PersonService`. It talks **only** to `persons_java` on the shared `opn_db` database.
 
 | Item | Value |
 |------|--------|
-| Module | `com.omnitest:api-java` |
+| Module | `com.omnitest:grpc-java` |
 | Listen | `0.0.0.0:50053` (`PORT` overrides) |
 | Table | `persons_java` |
 | Proto | `shared/proto/person_service.proto` (`com.omnitest.polyglot.nexus.shared.proto`) |
@@ -58,7 +58,7 @@ Seed CSV labels are lowercase (`male`, `female`, `bigender`, `agender`, `not spe
 | `POSTGRES_PASSWORD` | `opn_secret` |
 | `POSTGRES_SSLMODE` | `disable` |
 | `OTEL_EXPORTER_OTLP_ENDPOINT` | unset → **no-op** telemetry |
-| `OTEL_SERVICE_NAME` | `api-java` |
+| `OTEL_SERVICE_NAME` | `grpc-java` |
 
 Start Postgres first (`shared/infrastructure/docker-compose.yml`). Schema is created by `data/vector-store` SQL — Spring does **not** run DDL (`ddl-auto` is not configured).
 
@@ -67,14 +67,14 @@ Start Postgres first (`shared/infrastructure/docker-compose.yml`). Schema is cre
 From this directory (Java 17+, Maven wrapper included):
 
 ```powershell
-cd services\api-java
+cd services\grpc-java
 .\mvnw.cmd spring-boot:run
 ```
 
 Or:
 
 ```bash
-cd services/api-java
+cd services/grpc-java
 ./mvnw spring-boot:run
 ```
 
@@ -91,7 +91,7 @@ grpcurl -plaintext -d "{\"limit\": 5, \"offset\": 0}" localhost:50053 omnitest.p
 Stubs are generated at build time from `../../shared/proto` into `target/generated-sources/protobuf`. The Maven protobuf plugin runs `compile` and `compile-custom` (grpc-java).
 
 ```powershell
-cd services\api-java
+cd services\grpc-java
 .\mvnw.cmd compile
 ```
 

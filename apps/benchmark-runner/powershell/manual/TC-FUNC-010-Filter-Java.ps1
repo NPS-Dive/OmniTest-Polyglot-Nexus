@@ -1,6 +1,6 @@
 # ==============================================================================
 # File: apps/benchmark-runner/powershell/manual/TC-FUNC-010-Filter-Java.ps1
-# Purpose: Thin case — SearchByFilter on api-java.
+# Purpose: Thin case — SearchByFilter on grpc-java.
 # SOLID: SRP — bind TestId + language only.
 # Gherkin: docs/gherkin/person-filter.feature (@functional)
 # ==============================================================================

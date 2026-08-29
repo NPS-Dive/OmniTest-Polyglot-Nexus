@@ -1,5 +1,5 @@
 // ============================================================================
-// File: services/api-java/src/main/java/com/omnitest/apijava/presentation/grpc/PersonGrpcService.java
+// File: services/grpc-java/src/main/java/com/omnitest/apijava/presentation/grpc/PersonGrpcService.java
 // Purpose: PersonService RPC adapter — proto ↔ domain, then repository calls.
 // SOLID: SRP — transport mapping only (no SQL). DIP — depends on PersonRepository.
 // Dependencies: PersonServiceProto, domain, gRPC Status. All four RPCs live here.

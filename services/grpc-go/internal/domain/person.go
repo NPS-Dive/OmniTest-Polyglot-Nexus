@@ -1,5 +1,5 @@
 // ============================================================================
-// File: services/api-go/internal/domain/person.go
+// File: services/grpc-go/internal/domain/person.go
 // Purpose: Persistence-shaped Person entity and SearchByFilter criteria.
 // SOLID: SRP — data only. No SQL, no proto, no I/O.
 // Dependencies: none (stdlib). Presentation maps proto; infrastructure maps rows.

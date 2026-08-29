@@ -66,14 +66,14 @@ Implement the remaining platform so a hiring manager can:
 | Schema | `data/vector-store/02_create_tables.sql` — five tables. **No `persons_golang`.** |
 | Seed | `data/master_seed.csv` (~1M rows). Columns: `id, first_name, last_name, age, sex, marital_status, children_count, living_place, occupation, national_code`. |
 | Embeddings | `data/mock-generator/embedding_updater.py` — model `all-MiniLM-L6-v2`, 384-dim, currently hardcoded to `persons_csharp`. |
-| Node API | `services/api-node` — port **5079**, 4 RPCs, cleanest layers, proto field drift (`name`/`family`). |
-| C# API | `services/api-csharp` — Kestrel **5078**, 4 RPCs, no repository interface, empty `CreatePersonResponse`, old proto names. |
-| Python API | `services/api-python` — port **50052**, flat files, stale `person_service_pb2.py`, no interface, no `requirements.txt`. |
-| Java API | `services/api-java` — gRPC **50053**, REST 8083, only 2 RPCs wired, schema mismatch, dual JDBC + unused Spring Data, `ddl-auto: update`. |
-| C++ API | `services/api-cpp` — port **50051**, stub `main.cpp`, layered files **not linked in CMake**, wrong proto namespace `person::v1`, wrong table `persons`. |
+| Node API | `services/grpc-node` — port **5079**, 4 RPCs, cleanest layers, proto field drift (`name`/`family`). |
+| C# API | `services/grpc-csharp` — Kestrel **5078**, 4 RPCs, no repository interface, empty `CreatePersonResponse`, old proto names. |
+| Python API | `services/grpc-python` — port **50052**, flat files, stale `person_service_pb2.py`, no interface, no `requirements.txt`. |
+| Java API | `services/grpc-java` — gRPC **50053**, REST 8083, only 2 RPCs wired, schema mismatch, dual JDBC + unused Spring Data, `ddl-auto: update`. |
+| C++ API | `services/grpc-cpp` — port **50051**, stub `main.cpp`, layered files **not linked in CMake**, wrong proto namespace `person::v1`, wrong table `persons`. |
 | Go API | **Does not exist.** |
 | Mock generator | `data/mock-generator/` — SOLID reference (`models`, `rules`, `factory`, `exporters`, `main`). |
-| Root README | Out of date (flat `api-node/` tree, claims database-per-language). |
+| Root README | Out of date (flat `grpc-node/` tree, claims database-per-language). |
 
 ### Confirmed missing (you must create)
 
@@ -81,7 +81,7 @@ Implement the remaining platform so a hiring manager can:
 - `apps/benchmark-runner` (k6, PowerShell, orchestrator, reports)
 - `docs/` and `docs/gherkin/`
 - `data/knowledge-base/`
-- `services/api-go`
+- `services/grpc-go`
 - `services/ai-gateway`
 - `services/ai-agents`
 - OTEL collector, Prometheus, Grafana, Tempo configs
@@ -215,7 +215,7 @@ Do this first.
 
 ### Create Golang
 
-- New `services/api-go`: `cmd/server`, `internal/domain`, `internal/infrastructure/db`, `internal/presentation/grpc`.
+- New `services/grpc-go`: `cmd/server`, `internal/domain`, `internal/infrastructure/db`, `internal/presentation/grpc`.
 - Stack: `google.golang.org/grpc`, `pgx`, pgvector, OTEL.
 - Table `persons_golang`, port **50054**, all 4 RPCs, README.
 
@@ -408,12 +408,12 @@ OmniTest-Polyglot-Nexus/
 │       ├── orchestrator/
 │       └── reports/
 ├── services/
-│   ├── api-csharp/
-│   ├── api-cpp/
-│   ├── api-java/
-│   ├── api-node/
-│   ├── api-python/
-│   ├── api-go/                          # NEW
+│   ├── grpc-csharp/
+│   ├── grpc-cpp/
+│   ├── grpc-java/
+│   ├── grpc-node/
+│   ├── grpc-python/
+│   ├── grpc-go/                          # NEW
 │   ├── ai-gateway/                      # NEW FastAPI RAG / agent HTTP
 │   └── ai-agents/                       # NEW OpenClaw + Hermes + MCP + LangGraph
 ├── shared/
@@ -455,4 +455,4 @@ Do not claim a phase is done unless the files exist and are wired.
 
 ## START COMMAND (when this file is attached)
 
-Start at **Phase A**. Read `shared/proto/person_service.proto`, `data/vector-store/*.sql`, `shared/infrastructure/docker-compose.yml`, and each `services/api-*` entry point first. Then implement.
+Start at **Phase A**. Read `shared/proto/person_service.proto`, `data/vector-store/*.sql`, `shared/infrastructure/docker-compose.yml`, and each `services/grpc-*` entry point first. Then implement.

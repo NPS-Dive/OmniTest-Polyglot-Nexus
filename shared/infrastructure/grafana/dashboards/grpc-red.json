@@ -16,7 +16,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "sum(rate(opn_rpc_server_duration_milliseconds_count{service_name=~\"api-cpp|api-python|api-java|api-go|api-csharp|api-node\"}[5m])) by (service_name)",
+          "expr": "sum(rate(opn_rpc_server_duration_milliseconds_count{service_name=~\"grpc-cpp|grpc-python|grpc-java|grpc-go|grpc-csharp|grpc-node\"}[5m])) by (service_name)",
           "legendFormat": "{{service_name}}",
           "refId": "A"
         }
@@ -63,12 +63,12 @@
       "id": 10,
       "targets": [
         {
-          "expr": "sum(rate(opn_rpc_server_duration_milliseconds_count{service_name=\"api-cpp\"}[5m]))",
+          "expr": "sum(rate(opn_rpc_server_duration_milliseconds_count{service_name=\"grpc-cpp\"}[5m]))",
           "legendFormat": "cpp :50051",
           "refId": "A"
         }
       ],
-      "title": "C++ rate (api-cpp / persons_cpp)",
+      "title": "C++ rate (grpc-cpp / persons_cpp)",
       "type": "timeseries"
     },
     {
@@ -78,12 +78,12 @@
       "id": 11,
       "targets": [
         {
-          "expr": "sum(rate(opn_rpc_server_duration_milliseconds_count{service_name=\"api-python\"}[5m]))",
+          "expr": "sum(rate(opn_rpc_server_duration_milliseconds_count{service_name=\"grpc-python\"}[5m]))",
           "legendFormat": "python :50052",
           "refId": "A"
         }
       ],
-      "title": "Python rate (api-python / persons_python)",
+      "title": "Python rate (grpc-python / persons_python)",
       "type": "timeseries"
     },
     {
@@ -93,12 +93,12 @@
       "id": 12,
       "targets": [
         {
-          "expr": "sum(rate(opn_rpc_server_duration_milliseconds_count{service_name=\"api-java\"}[5m]))",
+          "expr": "sum(rate(opn_rpc_server_duration_milliseconds_count{service_name=\"grpc-java\"}[5m]))",
           "legendFormat": "java :50053",
           "refId": "A"
         }
       ],
-      "title": "Java rate (api-java / persons_java)",
+      "title": "Java rate (grpc-java / persons_java)",
       "type": "timeseries"
     },
     {
@@ -108,12 +108,12 @@
       "id": 13,
       "targets": [
         {
-          "expr": "sum(rate(opn_rpc_server_duration_milliseconds_count{service_name=\"api-go\"}[5m]))",
+          "expr": "sum(rate(opn_rpc_server_duration_milliseconds_count{service_name=\"grpc-go\"}[5m]))",
           "legendFormat": "go :50054",
           "refId": "A"
         }
       ],
-      "title": "Go rate (api-go / persons_golang)",
+      "title": "Go rate (grpc-go / persons_golang)",
       "type": "timeseries"
     },
     {
@@ -123,12 +123,12 @@
       "id": 14,
       "targets": [
         {
-          "expr": "sum(rate(opn_rpc_server_duration_milliseconds_count{service_name=\"api-csharp\"}[5m]))",
+          "expr": "sum(rate(opn_rpc_server_duration_milliseconds_count{service_name=\"grpc-csharp\"}[5m]))",
           "legendFormat": "csharp :5078",
           "refId": "A"
         }
       ],
-      "title": "C# rate (api-csharp / persons_csharp)",
+      "title": "C# rate (grpc-csharp / persons_csharp)",
       "type": "timeseries"
     },
     {
@@ -138,12 +138,12 @@
       "id": 15,
       "targets": [
         {
-          "expr": "sum(rate(opn_rpc_server_duration_milliseconds_count{service_name=\"api-node\"}[5m]))",
+          "expr": "sum(rate(opn_rpc_server_duration_milliseconds_count{service_name=\"grpc-node\"}[5m]))",
           "legendFormat": "node :5079",
           "refId": "A"
         }
       ],
-      "title": "Node rate (api-node / persons_node)",
+      "title": "Node rate (grpc-node / persons_node)",
       "type": "timeseries"
     }
   ],

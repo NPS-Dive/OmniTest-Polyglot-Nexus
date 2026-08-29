@@ -1,6 +1,10 @@
 # shared
 
+Cross-language assets. Person services under `services/grpc-*` all consume these.
+
 | Path | Role |
 |------|------|
-| `proto/person_service.proto` | Single gRPC contract for all six APIs |
-| `infrastructure/` | Docker Compose + OTEL / Prometheus / Grafana / Tempo |
+| [proto/](proto/README.md) | Single `person_service.proto` contract |
+| [infrastructure/](infrastructure/README.md) | Docker Compose: Postgres, OTEL, Prometheus, Grafana, Tempo |
+
+Do not fork the proto per language. Table names (`persons_*`) are not defined here — they live in `data/vector-store`.

@@ -48,7 +48,7 @@ cd apps\benchmark-runner\powershell
 
 ## k6
 
-See `k6/README.md`. Example after you install k6 and start `api-go`:
+See `k6/README.md`. Example after you install k6 and start `grpc-go`:
 
 ```powershell
 cd apps\benchmark-runner\k6

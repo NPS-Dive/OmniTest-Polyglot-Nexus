@@ -1,5 +1,5 @@
 // ============================================================================
-// File: services/api-java/src/main/java/com/omnitest/apijava/domain/PersonFilter.java
+// File: services/grpc-java/src/main/java/com/omnitest/apijava/domain/PersonFilter.java
 // Purpose: SearchByFilter criteria. Null / blank fields are ignored by SQL.
 // SOLID: SRP — filter DTO only. No SQL, no proto types (DIP).
 // Dependencies: none. Presentation copies proto optionals here; repository binds them.

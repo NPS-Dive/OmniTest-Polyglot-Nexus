@@ -40,5 +40,5 @@ var app = builder.Build();
 app.MapGrpcService<PersonGrpcService>();
 if (app.Environment.IsDevelopment())
     app.MapGrpcReflectionService();
-app.MapGet("/", () => "api-csharp gRPC on this host. Use a gRPC client.");
+app.MapGet("/", () => "grpc-csharp gRPC on this host. Use a gRPC client.");
 app.Run();

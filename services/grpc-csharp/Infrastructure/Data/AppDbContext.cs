@@ -1,6 +1,7 @@
 // ==============================================================================
-// File: Infrastructure/Data/AppDbContext.cs
-// Purpose: Entity Framework Core database context configuration.
+// File: services/grpc-csharp/Infrastructure/Data/AppDbContext.cs
+// Purpose: EF Core context for persons_csharp only (pgvector extension).
+// SOLID: SRP — schema registration. Queries live in PostgresPersonRepository.
 // ==============================================================================
 
 using Microsoft.EntityFrameworkCore;

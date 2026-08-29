@@ -12,12 +12,12 @@ OmniTest-Polyglot-Nexus is a **monorepo** that compares six implementations of t
 
 | Language | Process | Port | Table |
 |----------|---------|------|--------|
-| C++ | `services/api-cpp` | 50051 | `persons_cpp` |
-| Python | `services/api-python` | 50052 | `persons_python` |
-| Java | `services/api-java` | 50053 | `persons_java` |
-| Go | `services/api-go` | 50054 | `persons_golang` |
-| C# | `services/api-csharp` | 5078 | `persons_csharp` |
-| Node | `services/api-node` | 5079 | `persons_node` |
+| C++ | `services/grpc-cpp` | 50051 | `persons_cpp` |
+| Python | `services/grpc-python` | 50052 | `persons_python` |
+| Java | `services/grpc-java` | 50053 | `persons_java` |
+| Go | `services/grpc-go` | 50054 | `persons_golang` |
+| C# | `services/grpc-csharp` | 5078 | `persons_csharp` |
+| Node | `services/grpc-node` | 5079 | `persons_node` |
 
 Schema is shared: `id`, `first_name`, `last_name`, `age`, `sex`, `marital_status`, `children_count`, `living_place`, `occupation`, `national_code`, `embedding vector(384)`, `has_passport`. Proto field `gender` maps to `sex`; `job_category` maps to `occupation`; `embedding_vector` maps to `embedding`. `birth_date` is derived on read.
 

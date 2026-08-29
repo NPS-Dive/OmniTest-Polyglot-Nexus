@@ -1,7 +1,7 @@
 """
 File: generate_proto.py
 Purpose: Regenerate person_service_pb2*.py from the shared proto (source of truth).
-Run from services/api-python: python generate_proto.py
+Run from services/grpc-python: python generate_proto.py
 """
 
 from pathlib import Path

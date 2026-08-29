@@ -1,6 +1,6 @@
 # ==============================================================================
 # File: apps/benchmark-runner/powershell/manual/TC-FUNC-004-ReadAll-Java.ps1
-# Purpose: Thin case — ReadAllPersons on api-java (:50053 / persons_java).
+# Purpose: Thin case — ReadAllPersons on grpc-java (:50053 / persons_java).
 # SOLID: SRP — bind TestId + language only.
 # Gherkin: docs/gherkin/person-readall.feature (@functional)
 # ==============================================================================

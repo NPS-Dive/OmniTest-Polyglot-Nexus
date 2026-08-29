@@ -1,5 +1,5 @@
 // ============================================================================
-// File: services/api-go/internal/presentation/grpc/mapper.go
+// File: services/grpc-go/internal/presentation/grpc/mapper.go
 // Purpose: Bidirectional mapping between proto messages and domain.Person.
 // SOLID: SRP — translation only. No SQL. Server methods stay orchestration.
 // Dependencies: personpb stubs, domain. Seed labels are lowercase with spaces
@@ -13,8 +13,8 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/omnitest/api-go/internal/domain"
-	personpb "github.com/omnitest/api-go/internal/gen"
+	"github.com/omnitest/grpc-go/internal/domain"
+	personpb "github.com/omnitest/grpc-go/internal/gen"
 )
 
 // PersonToProto maps a domain row to the shared Person message.

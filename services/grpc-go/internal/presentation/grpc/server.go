@@ -1,5 +1,5 @@
 // ============================================================================
-// File: services/api-go/internal/presentation/grpc/server.go
+// File: services/grpc-go/internal/presentation/grpc/server.go
 // Purpose: PersonService RPC adapter — proto ↔ domain, then repository calls.
 // SOLID: SRP — transport mapping only (no SQL). DIP — depends on PersonRepository.
 // Dependencies: personpb, domain, google.golang.org/grpc status codes.
@@ -16,8 +16,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/omnitest/api-go/internal/domain"
-	personpb "github.com/omnitest/api-go/internal/gen"
+	"github.com/omnitest/grpc-go/internal/domain"
+	personpb "github.com/omnitest/grpc-go/internal/gen"
 )
 
 // ExpectedEmbeddingDims is MiniLM-L6-v2 / persons_*.embedding vector(384).

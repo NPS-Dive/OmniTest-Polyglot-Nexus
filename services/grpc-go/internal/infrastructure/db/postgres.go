@@ -1,5 +1,5 @@
 // ============================================================================
-// File: services/api-go/internal/infrastructure/db/postgres.go
+// File: services/grpc-go/internal/infrastructure/db/postgres.go
 // Purpose: pgx implementation of domain.PersonRepository against persons_golang.
 // SOLID: DIP — satisfies the domain port; SRP — SQL only, no proto mapping.
 // Dependencies: pgx/v5 pool, domain, otel traces (no-op unless provider set).
@@ -24,7 +24,7 @@ import (
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
 
-	"github.com/omnitest/api-go/internal/domain"
+	"github.com/omnitest/grpc-go/internal/domain"
 )
 
 // personColumns is the SELECT list. embedding is cast to text so we can parse
@@ -64,7 +64,7 @@ type PostgresPersonRepository struct {
 func NewPostgresPersonRepository(pool *pgxpool.Pool) *PostgresPersonRepository {
 	return &PostgresPersonRepository{
 		pool:   pool,
-		tracer: otel.Tracer("api-go/db"),
+		tracer: otel.Tracer("grpc-go/db"),
 	}
 }
 

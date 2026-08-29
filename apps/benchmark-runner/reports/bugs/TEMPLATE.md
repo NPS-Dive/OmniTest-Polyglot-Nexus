@@ -13,7 +13,7 @@ SOLID: SRP — one defect, one file.
 | **Severity** | Blocker / Critical / Major / Minor / Trivial |
 | **Priority** | High / Medium / Low |
 | **Environment** | Windows, compose stack, API version / commit |
-| **Module / language** | api-cpp / api-python / api-java / api-go / api-csharp / api-node |
+| **Module / language** | grpc-cpp / grpc-python / grpc-java / grpc-go / grpc-csharp / grpc-node |
 | **Table** | persons_* |
 | **Test id** | TC-FUNC-00N / k6 profile |
 | **BDD ref** | `docs/gherkin/….feature` |

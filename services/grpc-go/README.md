@@ -1,10 +1,10 @@
-# api-go — Person gRPC service
+# grpc-go — Person gRPC service
 
 Go implementation of `omnitest.polyglot.nexus.PersonService`. It talks **only** to `persons_golang` on the shared `opn_db` database.
 
 | Item | Value |
 |------|--------|
-| Module | `github.com/omnitest/api-go` |
+| Module | `github.com/omnitest/grpc-go` |
 | Listen | `0.0.0.0:50054` (`PORT` overrides) |
 | Table | `persons_golang` |
 | Proto | `shared/proto/person_service.proto` |
@@ -49,7 +49,7 @@ Seed CSV labels are lowercase (`male`, `job seeker`, `full-time`, `single parent
 | `POSTGRES_PASSWORD` | `opn_secret` |
 | `POSTGRES_SSLMODE` | `disable` |
 | `OTEL_EXPORTER_OTLP_ENDPOINT` | unset → **no-op** telemetry |
-| `OTEL_SERVICE_NAME` | `api-go` |
+| `OTEL_SERVICE_NAME` | `grpc-go` |
 
 Start Postgres first (`shared/infrastructure/docker-compose.yml`). Existing volumes need `data/vector-store/migrations/migrate_add_golang.sql` if `persons_golang` is missing.
 
@@ -58,7 +58,7 @@ Start Postgres first (`shared/infrastructure/docker-compose.yml`). Existing volu
 From this directory (Go 1.22+). If both 32-bit and 64-bit Go are installed, prefer the 64-bit `go` on PATH.
 
 ```powershell
-cd services\api-go
+cd services\grpc-go
 go run ./cmd/server
 ```
 
@@ -95,7 +95,7 @@ Add `$(go env GOPATH)\bin` to PATH.
 ### Windows
 
 ```powershell
-cd services\api-go
+cd services\grpc-go
 .\scripts\generate.ps1
 ```
 
@@ -108,24 +108,24 @@ go generate -tags generate ./...
 ### Linux / macOS / Make
 
 ```bash
-cd services/api-go
+cd services/grpc-go
 make generate
 ```
 
 ### Exact `protoc` command
 
-Run from `services/api-go`:
+Run from `services/grpc-go`:
 
 ```bash
 protoc -I ../../shared/proto \
   --go_out=internal/gen --go_opt=paths=source_relative \
-  --go_opt=Mperson_service.proto=github.com/omnitest/api-go/internal/gen \
+  --go_opt=Mperson_service.proto=github.com/omnitest/grpc-go/internal/gen \
   --go-grpc_out=internal/gen --go-grpc_opt=paths=source_relative \
-  --go-grpc_opt=Mperson_service.proto=github.com/omnitest/api-go/internal/gen \
+  --go-grpc_opt=Mperson_service.proto=github.com/omnitest/grpc-go/internal/gen \
   person_service.proto
 ```
 
-The shared proto also has `option go_package = "github.com/omnitest/api-go/internal/gen;personpb"`.
+The shared proto also has `option go_package = "github.com/omnitest/grpc-go/internal/gen;personpb"`.
 
 If `protoc` is not installed, keep the committed `internal/gen/*.pb.go` files and use the script above when you can install the compiler.
 

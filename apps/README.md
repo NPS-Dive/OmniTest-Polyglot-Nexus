@@ -1,6 +1,6 @@
 # apps
 
-Client-facing apps. They do **not** own Person data — that stays in `services/api-*` and `opn_db`.
+Client-facing apps. They do **not** own Person data — that stays in `services/grpc-*` and `opn_db`.
 
 | App | Port | Role |
 |-----|------|------|

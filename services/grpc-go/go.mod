@@ -1,6 +1,6 @@
-// Module: github.com/omnitest/api-go
+// Module: github.com/omnitest/grpc-go
 // Purpose: Go gRPC Person API (port 50054) against persons_golang only.
-module github.com/omnitest/api-go
+module github.com/omnitest/grpc-go
 
 go 1.22.0
 

@@ -1,5 +1,5 @@
 // ============================================================================
-// File: services/api-go/internal/gen/doc.go
+// File: services/grpc-go/internal/gen/doc.go
 // Purpose: Document the generated personpb package. Do not hand-edit *.pb.go.
 // SOLID: SRP — codegen output only. Mapping lives in presentation/grpc.
 // Dependencies: shared/proto/person_service.proto via scripts/generate.ps1.

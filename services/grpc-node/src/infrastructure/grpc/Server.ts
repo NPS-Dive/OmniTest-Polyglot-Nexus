@@ -1,7 +1,7 @@
 /**
- * @file Server.ts
- * @description Infrastructure layer for handling gRPC server initialization and transport.
- * Obeys SRP: Only handles network/transport layer logic.
+ * @file services/grpc-node/src/infrastructure/grpc/Server.ts
+ * @description Load shared proto and bind PersonService. Port 5079.
+ * SOLID: SRP — transport only. Handlers live in presentation/PersonController.
  */
 
 import * as grpc from '@grpc/grpc-js';

@@ -1,7 +1,7 @@
 //go:build generate
 
 // ============================================================================
-// File: services/api-go/generate.go
+// File: services/grpc-go/generate.go
 // Purpose: Host //go:generate so `go generate ./...` rebuilds gRPC stubs from
 //          the shared proto. This file is excluded from normal builds.
 // SOLID: SRP — codegen entry only; no runtime types.
