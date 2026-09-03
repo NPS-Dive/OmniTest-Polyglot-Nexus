@@ -14,7 +14,8 @@ param(
         'TC-FUNC-004',
         'TC-EDGE-001',
         'TC-EDGE-002',
-        'TC-EDGE-003'
+        'TC-EDGE-003',
+        'TC-EDGE-004'
     )
 )
 
@@ -40,6 +41,7 @@ foreach ($lang in $Languages) {
                 p90_ms        = 0
                 p95_ms        = 0
                 p98_ms        = 0
+                p99_ms        = 0
                 error_message = "$_"
             }
         }

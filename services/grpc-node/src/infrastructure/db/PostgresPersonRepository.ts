@@ -5,8 +5,15 @@
  */
 
 import { Pool, QueryResultRow } from 'pg';
-import { IPersonRepository } from '../../domain/IPersonRepository.js';
+import { IPersonRepository, PersonPage } from '../../domain/IPersonRepository.js';
 import { Person, PersonFilter } from '../../domain/Person.js';
+
+/** SQL twin of Go's normalizeLabel — matches "male", "MALE", "SEX_MALE". */
+const NORM_SEX = `trim(both from regexp_replace(
+    regexp_replace(replace(replace(lower(sex), '_', ' '), '-', ' '), '\\s+', ' ', 'g'),
+    '^(sex) ',
+    ''
+))`;
 
 const SELECT_COLS = `
     id, first_name, last_name, age, sex, marital_status, children_count,
@@ -55,15 +62,16 @@ export class PostgresPersonRepository implements IPersonRepository {
         return mapRow(result.rows[0]);
     }
 
-    public async readAll(limit: number, offset: number): Promise<Person[]> {
+    public async readAll(limit: number, offset: number): Promise<PersonPage> {
+        const count = await this.pool.query('SELECT COUNT(*)::int AS n FROM persons_node');
         const result = await this.pool.query(
             `SELECT ${SELECT_COLS} FROM persons_node ORDER BY id LIMIT $1 OFFSET $2`,
             [limit, offset]
         );
-        return result.rows.map(mapRow);
+        return { items: result.rows.map(mapRow), totalCount: Number(count.rows[0].n) };
     }
 
-    public async searchByFilter(filters: PersonFilter, limit: number): Promise<Person[]> {
+    public async searchByFilter(filters: PersonFilter, limit: number): Promise<PersonPage> {
         const clauses: string[] = ['1=1'];
         const values: unknown[] = [];
         let i = 1;
@@ -84,19 +92,25 @@ export class PostgresPersonRepository implements IPersonRepository {
             values.push(filters.maxAge);
         }
         if (filters.sex) {
-            clauses.push(`LOWER(sex) = LOWER($${i++})`);
-            values.push(filters.sex);
+            // Normalized compare so leftover UPPERCASE C++-style rows still match seed labels.
+            clauses.push(`${NORM_SEX} = $${i++}`);
+            values.push(filters.sex.replace(/[_-]+/g, ' ').trim().toLowerCase().replace(/^sex\s+/, ''));
         }
         if (filters.nationalCode) {
             clauses.push(`national_code = $${i++}`);
             values.push(filters.nationalCode);
         }
-        values.push(limit);
-        const result = await this.pool.query(
-            `SELECT ${SELECT_COLS} FROM persons_node WHERE ${clauses.join(' AND ')} LIMIT $${i}`,
+        const where = clauses.join(' AND ');
+        const count = await this.pool.query(
+            `SELECT COUNT(*)::int AS n FROM persons_node WHERE ${where}`,
             values
         );
-        return result.rows.map(mapRow);
+        values.push(limit);
+        const result = await this.pool.query(
+            `SELECT ${SELECT_COLS} FROM persons_node WHERE ${where} ORDER BY id LIMIT $${i}`,
+            values
+        );
+        return { items: result.rows.map(mapRow), totalCount: Number(count.rows[0].n) };
     }
 
     public async searchByVector(vector: number[], topK: number): Promise<Person[]> {

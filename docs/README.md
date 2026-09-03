@@ -10,6 +10,7 @@ QA documentation for OmniTest-Polyglot-Nexus. Features live in `gherkin/`. Runne
 | `gherkin/person-filter.feature` | `@functional` `@security` | `TC-FUNC-002`, `TC-EDGE-001`, `TC-EDGE-004`, `manual/TC-FUNC-007`, `TC-FUNC-010`, `TC-EDGE-001` |
 | `gherkin/person-vector.feature` | `@functional` `@performance` | `TC-FUNC-003`, `TC-EDGE-003`, `manual/TC-FUNC-008`, `TC-EDGE-003` |
 | `gherkin/person-security.feature` | `@security` | `TC-EDGE-002`, `k6/security.js` |
+| `gherkin/person-performance.feature` | `@performance` | `k6/load.js` `stress.js` `spike.js` `endurance.js` `scalability.js` `concurrency.js` `compare.js`; wrapper `Invoke-AllLanguagePerf.ps1` |
 
 ## How steps are executed (Windows)
 

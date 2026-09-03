@@ -3,7 +3,7 @@
 # Purpose: OmniTest MCP tool bus (stdio-friendly). Shared by Hermes; OpenClaw
 #          uses ask_hermes / delegate, not a second copy of these tools.
 # SOLID: SRP per tool. SQL tool is SELECT-only.
-# Tools: list_services, grpc_call (stub), run_test, read_last_report,
+# Tools: list_services, grpc_call (grpcurl), run_test, read_last_report,
 #        query_persons_sql_readonly
 # ==============================================================================
 """Minimal MCP-style server: JSON-RPC-ish over stdin/stdout or `python server.py --demo`."""
@@ -50,15 +50,68 @@ def list_services(_: dict[str, Any] | None = None) -> dict[str, Any]:
 
 def grpc_call(args: dict[str, Any]) -> dict[str, Any]:
     """
-    Stub: does not send gRPC. Hermes must confirm CreatePerson before a future
-    implementation wires grpcurl. Read-mostly by default.
+    Invoke PersonService via grpcurl. Read RPCs are default.
+    CreatePerson requires confirm=true (Hermes / LangGraph interrupt).
     """
+    language = str(args.get("language") or "")
+    rpc = str(args.get("rpc") or "ReadAllPersons")
+    payload = args.get("payload") or {}
+    confirm = bool(args.get("confirm"))
+    if rpc == "CreatePerson" and not confirm:
+        return {
+            "ok": False,
+            "error": "CreatePerson requires confirm=true (Hermes skill / LangGraph interrupt).",
+            "requested": args,
+        }
+    cfg = json.loads(SERVICES.read_text(encoding="utf-8"))
+    meta = cfg.get("languages", {}).get(language)
+    if not meta:
+        return {"ok": False, "error": f"unknown language {language}"}
+    proto = REPO / "shared" / "proto" / "person_service.proto"
+    import_dir = proto.parent
+    service = cfg.get("grpc", {}).get("packageService", "omnitest.polyglot.nexus.PersonService")
+    target = f"{meta['host']}:{meta['port']}"
+    if not _which("grpcurl"):
+        return {
+            "ok": False,
+            "error": "grpcurl not on PATH. Install it or use Invoke-ManualTest.ps1.",
+            "target": target,
+            "rpc": rpc,
+        }
+    body = payload if payload else _default_payload(rpc)
+    cmd = [
+        "grpcurl",
+        "-plaintext",
+        "-import-path",
+        str(import_dir),
+        "-proto",
+        proto.name,
+        "-d",
+        json.dumps(body),
+        target,
+        f"{service}/{rpc}",
+    ]
+    proc = subprocess.run(cmd, capture_output=True, text=True, timeout=30, check=False)
     return {
-        "ok": False,
-        "stub": True,
-        "message": "grpc_call is a stub. Use run_test or the PowerShell runner. CreatePerson requires explicit confirmation in a Hermes skill.",
-        "requested": args,
+        "ok": proc.returncode == 0,
+        "returncode": proc.returncode,
+        "stdout": proc.stdout[-4000:],
+        "stderr": proc.stderr[-2000:],
+        "command": cmd,
     }
+
+
+def _default_payload(rpc: str) -> dict[str, Any]:
+    """Safe read-mostly defaults so Hermes can probe without a full payload."""
+    if rpc == "ReadAllPersons":
+        return {"limit": 1, "offset": 0}
+    if rpc == "SearchByFilter":
+        return {"first_name": "A"}
+    if rpc == "SearchByVector":
+        return {"vector": [0.0] * 8, "top_k": 1}
+    if rpc == "CreatePerson":
+        return {"person": {"first_name": "Mcp", "last_name": "Probe", "age": 1, "national_code": "0000000000"}}
+    return {}
 
 
 def run_test(args: dict[str, Any]) -> dict[str, Any]:

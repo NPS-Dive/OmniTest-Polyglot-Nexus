@@ -27,3 +27,11 @@ scrape_configs:
   - job_name: prometheus
     static_configs:
       - targets: ["localhost:9090"]
+
+  # C++ SDK fallback: host-side /metrics (Windows Docker uses host.docker.internal).
+  - job_name: grpc-cpp-host
+    static_configs:
+      - targets: ["host.docker.internal:15051"]
+        labels:
+          service_name: grpc-cpp
+          source: cpp-fallback

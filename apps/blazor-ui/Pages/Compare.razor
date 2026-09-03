@@ -27,6 +27,7 @@ else
                 <th>p90</th>
                 <th>p95</th>
                 <th>p98</th>
+                <th>p99</th>
                 <th>ttl</th>
                 <th>pass</th>
             </tr>
@@ -41,6 +42,7 @@ else
                     <td>@row.P90</td>
                     <td>@row.P95</td>
                     <td>@row.P98</td>
+                    <td>@row.P99</td>
                     <td>@row.Ttl</td>
                     <td>@row.Pass</td>
                 </tr>
@@ -52,7 +54,7 @@ else
 <pre>@_raw</pre>
 
 @code {
-    private sealed record Row(string Bucket, string TestName, string Language, string P90, string P95, string P98, string Ttl, string Pass);
+    private sealed record Row(string Bucket, string TestName, string Language, string P90, string P95, string P98, string P99, string Ttl, string Pass);
 
     private readonly List<Row> _rows = new();
     private string _raw = "";
@@ -104,6 +106,7 @@ else
                 Get(d, "p90_ms"),
                 Get(d, "p95_ms"),
                 Get(d, "p98_ms"),
+                Get(d, "p99_ms"),
                 Get(d, "ttl_ms"),
                 Get(d, "pass")));
         }

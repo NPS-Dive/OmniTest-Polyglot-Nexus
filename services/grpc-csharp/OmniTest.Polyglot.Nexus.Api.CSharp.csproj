@@ -24,6 +24,11 @@ Purpose: Project configuration, NuGet dependencies, and Protobuf compilation.
     <!-- PostgreSQL and pgvector Dependencies -->
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
     <PackageReference Include="Pgvector.EntityFrameworkCore" Version="0.2.0" />
+
+    <!-- OTEL: traces + metrics when OTEL_EXPORTER_OTLP_ENDPOINT is set -->
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.12.0" />
+    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.12.0" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.12.0" />
   </ItemGroup>
 
   <ItemGroup>

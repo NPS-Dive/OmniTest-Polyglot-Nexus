@@ -6,9 +6,11 @@
 import pg from 'pg';
 import { PostgresPersonRepository } from './infrastructure/db/PostgresPersonRepository.js';
 import { GrpcServer } from './infrastructure/grpc/Server.js';
+import { setupTelemetry } from './infrastructure/telemetry/otel.js';
 import { PersonController } from './presentation/PersonController.js';
 
 async function bootstrap(): Promise<void> {
+    await setupTelemetry('grpc-node');
     const pool = new pg.Pool({
         host: process.env.POSTGRES_HOST ?? 'localhost',
         port: Number(process.env.POSTGRES_PORT ?? 5432),
@@ -24,10 +26,6 @@ async function bootstrap(): Promise<void> {
     } catch (error) {
         console.error('[DB] connection failed', error);
         process.exit(1);
-    }
-
-    if (process.env.OTEL_EXPORTER_OTLP_ENDPOINT) {
-        console.log(`[OTEL] endpoint ${process.env.OTEL_EXPORTER_OTLP_ENDPOINT}`);
     }
 
     const repository = new PostgresPersonRepository(pool);

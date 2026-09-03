@@ -21,11 +21,11 @@ class IPersonRepository(ABC):
 
     @abstractmethod
     def read_all(self, limit: int, offset: int) -> Tuple[List[Person], int]:
-        """Paginated list plus count of rows in this page."""
+        """Paginated list plus full-table COUNT(*) (not the page length)."""
 
     @abstractmethod
-    def search_by_filter(self, filters: PersonFilter, limit: int) -> List[Person]:
-        """AND-combine provided filters."""
+    def search_by_filter(self, filters: PersonFilter, limit: int) -> Tuple[List[Person], int]:
+        """AND-combine provided filters. Second value is matching COUNT(*)."""
 
     @abstractmethod
     def search_by_vector(self, vector: List[float], top_k: int) -> List[Person]:

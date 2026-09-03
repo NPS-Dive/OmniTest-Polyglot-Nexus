@@ -154,6 +154,7 @@ def reports_latest(limit: int = 30) -> dict[str, Any]:
         "manual": _tail_jsonl(HISTORY_DIR / "manual_results.jsonl", limit),
         "automated": _tail_jsonl(HISTORY_DIR / "automated_results.jsonl", limit),
         "performance": _tail_jsonl(HISTORY_DIR / "performance_results.jsonl", limit),
+        "service_runs": _tail_jsonl(HISTORY_DIR / "service_runs.jsonl", limit),
     }
 
 

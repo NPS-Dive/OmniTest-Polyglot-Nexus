@@ -61,6 +61,8 @@ class PostgresPersonRepository(IPersonRepository):
         return _to_domain(entity)
 
     def read_all(self, limit: int, offset: int) -> Tuple[List[Person], int]:
+        # COUNT(*) keeps Python total_count comparable with Go/Java/C++.
+        total = int(self.db.query(func.count(PersonEntity.id)).scalar() or 0)
         rows = (
             self.db.query(PersonEntity)
             .order_by(asc(PersonEntity.id))
@@ -68,10 +70,9 @@ class PostgresPersonRepository(IPersonRepository):
             .limit(limit)
             .all()
         )
-        people = [_to_domain(r) for r in rows]
-        return people, len(people)
+        return [_to_domain(r) for r in rows], total
 
-    def search_by_filter(self, filters: PersonFilter, limit: int) -> List[Person]:
+    def search_by_filter(self, filters: PersonFilter, limit: int) -> Tuple[List[Person], int]:
         query = self.db.query(PersonEntity)
         if filters.first_name:
             query = query.filter(PersonEntity.first_name.ilike(f"%{filters.first_name}%"))
@@ -82,10 +83,13 @@ class PostgresPersonRepository(IPersonRepository):
         if filters.max_age is not None:
             query = query.filter(PersonEntity.age <= filters.max_age)
         if filters.sex:
+            # Case-insensitive: seed "male" and leftover "MALE" both match.
             query = query.filter(func.lower(PersonEntity.sex) == filters.sex.lower())
         if filters.national_code:
             query = query.filter(PersonEntity.national_code == filters.national_code)
-        return [_to_domain(r) for r in query.limit(limit).all()]
+        total = int(query.with_entities(func.count(PersonEntity.id)).scalar() or 0)
+        rows = query.order_by(asc(PersonEntity.id)).limit(limit).all()
+        return [_to_domain(r) for r in rows], total
 
     def search_by_vector(self, vector: List[float], top_k: int) -> List[Person]:
         rows = (

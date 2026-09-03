@@ -7,6 +7,7 @@
 // ============================================================================
 
 #include "PersonGrpcService.hpp"
+#include "infrastructure/telemetry/Otel.hpp"
 
 #include <algorithm>
 #include <cctype>
@@ -97,20 +98,20 @@ Sex SexFromDb(const std::string& raw) {
 }
 
 /**
- * @brief Persist Sex without the SEX_ prefix (MALE, not SEX_MALE) per SQL comments.
+ * @brief Persist Sex as a seed label ("male") so C++ rows match the other five languages.
  */
 std::string SexToDb(Sex value) {
     switch (value) {
         case SEX_MALE:
-            return "MALE";
+            return "male";
         case SEX_FEMALE:
-            return "FEMALE";
+            return "female";
         case SEX_BIGENDER:
-            return "BIGENDER";
+            return "bigender";
         case SEX_AGENDER:
-            return "AGENDER";
+            return "agender";
         default:
-            return "UNSPECIFIED";
+            return "not specified";
     }
 }
 
@@ -138,22 +139,22 @@ MaritalStatus MaritalFromDb(const std::string& raw) {
 }
 
 /**
- * @brief Persist MaritalStatus without prefix (SINGLE_PARENT, not MARITAL_STATUS_…).
+ * @brief Persist MaritalStatus as a seed label ("single parent").
  */
 std::string MaritalToDb(MaritalStatus value) {
     switch (value) {
         case MARITAL_STATUS_SINGLE:
-            return "SINGLE";
+            return "single";
         case MARITAL_STATUS_MARRIED:
-            return "MARRIED";
+            return "married";
         case MARITAL_STATUS_DIVORCED:
-            return "DIVORCED";
+            return "divorced";
         case MARITAL_STATUS_WIDOWED:
-            return "WIDOWED";
+            return "widowed";
         case MARITAL_STATUS_SINGLE_PARENT:
-            return "SINGLE_PARENT";
+            return "single parent";
         default:
-            return "UNSPECIFIED";
+            return "unspecified";
     }
 }
 
@@ -187,26 +188,26 @@ LivingPlace LivingFromDb(const std::string& raw) {
 }
 
 /**
- * @brief Persist LivingPlace without prefix (HOUSE, not LIVING_PLACE_HOUSE).
+ * @brief Persist LivingPlace as a seed label ("apartment").
  */
 std::string LivingToDb(LivingPlace value) {
     switch (value) {
         case LIVING_PLACE_STUDIO:
-            return "STUDIO";
+            return "studio";
         case LIVING_PLACE_APARTMENT:
-            return "APARTMENT";
+            return "apartment";
         case LIVING_PLACE_HOUSE:
-            return "HOUSE";
+            return "house";
         case LIVING_PLACE_VILLA:
-            return "VILLA";
+            return "villa";
         case LIVING_PLACE_HOSTEL:
-            return "HOSTEL";
+            return "hostel";
         case LIVING_PLACE_DORM:
-            return "DORM";
+            return "dorm";
         case LIVING_PLACE_HOTEL:
-            return "HOTEL";
+            return "hotel";
         default:
-            return "UNSPECIFIED";
+            return "unspecified";
     }
 }
 
@@ -237,24 +238,24 @@ Occupation OccupationFromDb(const std::string& raw) {
 }
 
 /**
- * @brief Persist Occupation without prefix (FULL_TIME, not OCCUPATION_FULL_TIME).
+ * @brief Persist Occupation as a seed label ("full-time", "job seeker").
  */
 std::string OccupationToDb(Occupation value) {
     switch (value) {
         case OCCUPATION_JOB_SEEKER:
-            return "JOB_SEEKER";
+            return "job seeker";
         case OCCUPATION_JOBLESS:
-            return "JOBLESS";
+            return "jobless";
         case OCCUPATION_FULL_TIME:
-            return "FULL_TIME";
+            return "full-time";
         case OCCUPATION_PART_TIME:
-            return "PART_TIME";
+            return "part-time";
         case OCCUPATION_STUDENT:
-            return "STUDENT";
+            return "student";
         case OCCUPATION_HOUSEKEEPER:
-            return "HOUSEKEEPER";
+            return "housekeeper";
         default:
-            return "UNSPECIFIED";
+            return "unspecified";
     }
 }
 
@@ -326,6 +327,7 @@ PersonGrpcService::PersonGrpcService(std::shared_ptr<domain::IPersonRepository> 
 grpc::Status PersonGrpcService::CreatePerson(grpc::ServerContext* /*context*/,
                                              const CreatePersonRequest* request,
                                              CreatePersonResponse* response) {
+    infrastructure::telemetry::RpcTimer timer;
     if (request == nullptr || !request->has_person()) {
         response->set_success(false);
         response->set_message("CreatePersonRequest.person is required");
@@ -351,6 +353,7 @@ grpc::Status PersonGrpcService::CreatePerson(grpc::ServerContext* /*context*/,
 grpc::Status PersonGrpcService::ReadAllPersons(grpc::ServerContext* /*context*/,
                                                const ReadAllPersonsRequest* request,
                                                PersonListResponse* response) {
+    infrastructure::telemetry::RpcTimer timer;
     try {
         int total = 0;
         const int limit = request != nullptr ? request->limit() : 0;
@@ -369,6 +372,7 @@ grpc::Status PersonGrpcService::ReadAllPersons(grpc::ServerContext* /*context*/,
 grpc::Status PersonGrpcService::SearchByFilter(grpc::ServerContext* /*context*/,
                                                const FilterSearchRequest* request,
                                                PersonListResponse* response) {
+    infrastructure::telemetry::RpcTimer timer;
     try {
         domain::PersonFilter filter;
         if (request != nullptr) {
@@ -408,6 +412,7 @@ grpc::Status PersonGrpcService::SearchByFilter(grpc::ServerContext* /*context*/,
 grpc::Status PersonGrpcService::SearchByVector(grpc::ServerContext* /*context*/,
                                                const VectorSearchRequest* request,
                                                PersonListResponse* response) {
+    infrastructure::telemetry::RpcTimer timer;
     if (request == nullptr || request->vector_size() == 0) {
         return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
                             "VectorSearchRequest.vector must not be empty");

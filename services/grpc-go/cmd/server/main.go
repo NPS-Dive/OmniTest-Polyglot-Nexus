@@ -57,6 +57,7 @@ func main() {
 	svc := grpcsvc.NewServer(repo)
 
 	var opts []grpc.ServerOption
+	opts = append(opts, grpc.ChainUnaryInterceptor(telemetry.UnaryMetricsInterceptor()))
 	if telemetry.Enabled() {
 		// Stats handler (not unary interceptor) is the current otelgrpc API.
 		opts = append(opts, grpc.StatsHandler(otelgrpc.NewServerHandler()))

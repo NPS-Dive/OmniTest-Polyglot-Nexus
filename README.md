@@ -113,7 +113,7 @@ docker compose ps
 
 - Grafana: [http://localhost:3000](http://localhost:3000) — anonymous Admin or `admin` / `admin`
 - During live APIs: dashboard **gRPC RED — six languages**
-- During k6 remote-write: **Test-run comparison — p90 / p95 / p98**
+- During k6 remote-write: **Test-run comparison — p90 / p95 / p98 / p99**
 
 Set `OTEL_EXPORTER_OTLP_ENDPOINT=localhost:4317` on APIs when you want traces/metrics. Details: `shared/infrastructure/README.md`.
 
@@ -130,7 +130,7 @@ cd apps\benchmark-runner\powershell
 
 Functional coverage is **loops** (4 RPCs × 6 languages) in `Invoke-FunctionalRpc.ps1`. Thin cases live under `powershell/manual/`. If **grpcurl** is missing, the runner records a fail and does not send an RPC (mock-safe skip).
 
-k6 scripts are in `apps/benchmark-runner/k6/` (`load.js`, `stress.js`, `spike.js`, `concurrency.js`, `security.js`). They are **not** claimed to have been executed by this repo snapshot. After you install k6:
+k6 scripts are in `apps/benchmark-runner/k6/` (`load.js`, `stress.js`, `spike.js`, `concurrency.js`, `endurance.js`, `scalability.js`, `compare.js`, `security.js`) plus shared `k6/lib/endpoints.js`. History writer: PowerShell `ReportWriter.ps1` and `apps/benchmark-runner/file-generator/`. Characteristics table: `docs/benchmark-characteristics.md`. After you install k6:
 
 ```powershell
 cd apps\benchmark-runner\k6
@@ -139,7 +139,7 @@ k6 run -e LANG=go .\load.js
 
 BDD map: `docs/README.md` ↔ `docs/gherkin/*.feature` (`@functional` `@performance` `@security`).
 
-History (append-only): `apps/benchmark-runner/reports/history/*.csv` + `*.jsonl`. Bugs: `reports/bugs/TEMPLATE.md`.
+History (append-only): `manual_results`, `automated_results`, `performance_results`, and separate **service_runs** CSV/JSONL. Columns include p90/p95/p98/**p99** and TTL. Bugs: `reports/bugs/TEMPLATE.md`. Probe ports: `powershell/Probe-Services.ps1`.
 
 ## Blazor + orchestrator
 

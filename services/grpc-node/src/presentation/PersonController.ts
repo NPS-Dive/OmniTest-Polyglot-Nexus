@@ -81,11 +81,11 @@ export class PersonController {
         callback: UnaryCallback
     ): Promise<void> {
         try {
-            const records = await this.repository.readAll(
+            const page = await this.repository.readAll(
                 clampLimit(Number(call.request.limit ?? 0)),
                 Math.max(Number(call.request.offset ?? 0), 0)
             );
-            callback(null, { persons: records.map(toProto), total_count: records.length });
+            callback(null, { persons: page.items.map(toProto), total_count: page.totalCount });
         } catch (error) {
             const message = error instanceof Error ? error.message : String(error);
             callback({ code: grpc.status.INTERNAL, details: message } as grpc.ServiceError);
@@ -109,8 +109,8 @@ export class PersonController {
                     : undefined,
                 nationalCode: (req.national_code as string) || undefined
             };
-            const records = await this.repository.searchByFilter(filters, 100);
-            callback(null, { persons: records.map(toProto), total_count: records.length });
+            const page = await this.repository.searchByFilter(filters, 100);
+            callback(null, { persons: page.items.map(toProto), total_count: page.totalCount });
         } catch (error) {
             const message = error instanceof Error ? error.message : String(error);
             callback({ code: grpc.status.INTERNAL, details: message } as grpc.ServiceError);

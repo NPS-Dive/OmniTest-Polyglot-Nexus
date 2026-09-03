@@ -103,7 +103,7 @@ public class OtelConfig {
                 .setTracerProvider(tracerProvider)
                 .setMeterProvider(meterProvider)
                 .setPropagators(ContextPropagators.create(W3CTraceContextPropagator.getInstance()))
-                .build();
+                .buildAndRegisterGlobal();
 
         log.info("OTLP exporter configured at {} (service={})", collector, serviceName);
         return sdk;

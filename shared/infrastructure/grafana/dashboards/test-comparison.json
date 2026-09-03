@@ -31,9 +31,14 @@
           "expr": "histogram_quantile(0.98, sum(rate(k6_grpc_req_duration_bucket[1m])) by (le, lang))",
           "legendFormat": "{{lang}} p98",
           "refId": "C"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum(rate(k6_grpc_req_duration_bucket[1m])) by (le, lang))",
+          "legendFormat": "{{lang}} p99",
+          "refId": "D"
         }
       ],
-      "title": "k6 gRPC duration — p90 / p95 / p98 by LANG",
+      "title": "k6 gRPC duration — p90 / p95 / p98 / p99 by LANG",
       "type": "timeseries"
     },
     {
@@ -89,7 +94,7 @@
   "time": { "from": "now-30m", "to": "now" },
   "timepicker": {},
   "timezone": "browser",
-  "title": "Test-run comparison — p90 / p95 / p98",
+  "title": "Test-run comparison — p90 / p95 / p98 / p99",
   "uid": "opn-test-comparison",
   "version": 1
 }

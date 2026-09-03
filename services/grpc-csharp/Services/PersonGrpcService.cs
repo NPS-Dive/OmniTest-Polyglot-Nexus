@@ -63,8 +63,8 @@ public sealed class PersonGrpcService : PersonService.PersonServiceBase
             NationalCode = request.HasNationalCode ? request.NationalCode : null
         };
 
-        var items = await _repository.SearchByFilterAsync(filter, 100, context.CancellationToken);
-        var response = new PersonListResponse { TotalCount = items.Count };
+        var (items, total) = await _repository.SearchByFilterAsync(filter, 100, context.CancellationToken);
+        var response = new PersonListResponse { TotalCount = total };
         response.Persons.AddRange(items.Select(PersonMapper.ToProto));
         return response;
     }

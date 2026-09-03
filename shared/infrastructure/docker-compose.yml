@@ -31,6 +31,7 @@ services:
   # to Tempo and scrapable metrics to Prometheus (exporter :8889).
   otel-collector:
     image: otel/opentelemetry-collector-contrib:0.114.0
+    # Pull may fail on flaky Docker Hub TLS; retry `docker compose pull` if missing.
     container_name: opn-otel-collector
     command: ["--config=/etc/otelcol/config.yaml"]
     volumes:
@@ -47,7 +48,7 @@ services:
   # Metrics store. Remote-write receiver is on so k6 can push
   # experimental-prometheus-rw without a sidecar.
   prometheus:
-    image: prom/prometheus:v2.54.1
+    image: prom/prometheus:v2.55.1
     container_name: opn-prometheus
     command:
       - --config.file=/etc/prometheus/prometheus.yml
@@ -79,7 +80,7 @@ services:
 
   # Dashboards. Anonymous Admin AND admin/admin so either login style works.
   grafana:
-    image: grafana/grafana:11.2.2
+    image: grafana/grafana:11.3.0
     container_name: opn-grafana
     environment:
       GF_SECURITY_ADMIN_USER: admin

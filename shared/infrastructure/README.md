@@ -40,7 +40,9 @@ docker compose down
 **Which dashboard during a k6 run**
 
 1. Folder **OmniTest** → **gRPC RED — six languages** (`uid: opn-grpc-red`) while APIs are serving. Six per-language rate panels plus shared rate / error / p95.
-2. Folder **OmniTest** → **Test-run comparison — p90 / p95 / p98** (`uid: opn-test-comparison`) while k6 is remote-writing.
+2. Folder **OmniTest** → **Test-run comparison — p90 / p95 / p98 / p99** (`uid: opn-test-comparison`) while k6 is remote-writing.
+
+C++ without the OTEL SDK publishes Prometheus text on host `:15051` (`METRICS_PORT`). Compose Prometheus scrapes `host.docker.internal:15051`.
 
 Provisioned datasources: **Prometheus** (`http://prometheus:9090`), **Tempo** (`http://tempo:3200`).
 

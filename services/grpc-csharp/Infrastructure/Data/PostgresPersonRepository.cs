@@ -28,22 +28,32 @@ public sealed class PostgresPersonRepository : IPersonRepository
         return ToDomain(entity);
     }
 
-    public async Task<(IReadOnlyList<Person> Items, int PageCount)> ReadAllAsync(
+    public async Task<(IReadOnlyList<Person> Items, int TotalCount)> ReadAllAsync(
         int limit, int offset, CancellationToken cancellationToken)
     {
+        // COUNT(*) is the contract for total_count — page length would make
+        // C# look "smaller" than Go/Java/C++ on the same 1M-row table.
+        var total = await _db.Persons.AsNoTracking().CountAsync(cancellationToken);
         var rows = await _db.Persons.AsNoTracking()
             .OrderBy(p => p.Id)
             .Skip(offset)
             .Take(limit)
             .ToListAsync(cancellationToken);
-        var items = rows.Select(ToDomain).ToList();
-        return (items, items.Count);
+        return (rows.Select(ToDomain).ToList(), total);
     }
 
-    public async Task<IReadOnlyList<Person>> SearchByFilterAsync(
+    public async Task<(IReadOnlyList<Person> Items, int TotalCount)> SearchByFilterAsync(
         PersonFilter filter, int limit, CancellationToken cancellationToken)
     {
-        var query = _db.Persons.AsNoTracking().AsQueryable();
+        var query = ApplyFilter(_db.Persons.AsNoTracking(), filter);
+        var total = await query.CountAsync(cancellationToken);
+        var rows = await query.OrderBy(p => p.Id).Take(limit).ToListAsync(cancellationToken);
+        return (rows.Select(ToDomain).ToList(), total);
+    }
+
+    /// <summary>AND-combine optional filters. Sex compares case-insensitively so seed "male" and proto "MALE" both match.</summary>
+    private static IQueryable<PersonEntity> ApplyFilter(IQueryable<PersonEntity> query, PersonFilter filter)
+    {
         if (!string.IsNullOrWhiteSpace(filter.FirstName))
             query = query.Where(p => p.FirstName.ToLower().Contains(filter.FirstName.ToLower()));
         if (!string.IsNullOrWhiteSpace(filter.LastName))
@@ -56,9 +66,7 @@ public sealed class PostgresPersonRepository : IPersonRepository
             query = query.Where(p => p.Sex.ToLower() == filter.Sex.ToLower());
         if (!string.IsNullOrWhiteSpace(filter.NationalCode))
             query = query.Where(p => p.NationalCode == filter.NationalCode);
-
-        var rows = await query.Take(limit).ToListAsync(cancellationToken);
-        return rows.Select(ToDomain).ToList();
+        return query;
     }
 
     public async Task<IReadOnlyList<Person>> SearchByVectorAsync(

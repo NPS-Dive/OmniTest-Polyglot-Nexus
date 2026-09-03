@@ -7,12 +7,15 @@
 using Microsoft.EntityFrameworkCore;
 using OmniTest.Polyglot.Nexus.Api.CSharp.Domain;
 using OmniTest.Polyglot.Nexus.Api.CSharp.Infrastructure.Data;
+using OmniTest.Polyglot.Nexus.Api.CSharp.Infrastructure.Telemetry;
 using OmniTest.Polyglot.Nexus.Api.CSharp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddGrpc();
+builder.Services.AddGrpc(options => options.Interceptors.Add<RpcMetricsInterceptor>());
+builder.Services.AddSingleton<RpcMetricsInterceptor>();
 builder.Services.AddGrpcReflection();
+OtelSetup.AddIfConfigured(builder.Services);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? "Host=localhost;Port=5432;Database=opn_db;Username=opn_admin;Password=opn_secret";
@@ -31,10 +34,6 @@ if (!string.IsNullOrWhiteSpace(host))
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString, o => o.UseVector()));
 builder.Services.AddScoped<IPersonRepository, PostgresPersonRepository>();
-
-var otel = Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_ENDPOINT");
-if (!string.IsNullOrWhiteSpace(otel))
-    Console.WriteLine($"[OTEL] traces intended for {otel} (wire SDK in Phase C compose).");
 
 var app = builder.Build();
 app.MapGrpcService<PersonGrpcService>();

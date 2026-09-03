@@ -39,14 +39,15 @@ $rankLines = @()
 foreach ($lang in $langs) {
     $slice = @($all | Where-Object { $_.language -eq $lang })
     if ($slice.Count -eq 0) {
-        $rankLines += "| $lang | — | — | — | — | 0 |"
+        $rankLines += "| $lang | — | — | — | — | — | 0 |"
         continue
     }
     $p90 = ($slice | Measure-Object -Property p90_ms -Average).Average
     $p95 = ($slice | Measure-Object -Property p95_ms -Average).Average
     $p98 = ($slice | Measure-Object -Property p98_ms -Average).Average
+    $p99 = ($slice | Measure-Object -Property p99_ms -Average).Average
     $ttl = ($slice | Measure-Object -Property ttl_ms -Average).Average
-    $rankLines += ("| {0} | {1:N1} | {2:N1} | {3:N1} | {4:N1} | {5} |" -f $lang, $p90, $p95, $p98, $ttl, $slice.Count)
+    $rankLines += ("| {0} | {1:N1} | {2:N1} | {3:N1} | {4:N1} | {5:N1} | {6} |" -f $lang, $p90, $p95, $p98, $p99, $ttl, $slice.Count)
 }
 
 $passCount = @($all | Where-Object { $_.pass -eq 'True' -or $_.pass -eq $true }).Count
@@ -75,8 +76,8 @@ BDD refs: ``docs/gherkin/person-readall.feature``, ``person-filter.feature``, ``
 
 ## Cross-language comparison (mean of available rows)
 
-| Language | mean p90 (ms) | mean p95 (ms) | mean p98 (ms) | mean TTL (ms) | n |
-|----------|---------------|---------------|---------------|---------------|---|
+| Language | mean p90 (ms) | mean p95 (ms) | mean p98 (ms) | mean p99 (ms) | mean TTL (ms) | n |
+|----------|---------------|---------------|---------------|---------------|---------------|---|
 $($rankLines -join "`n")
 
 Empty cells mean that language has no history yet (tests were not run, or grpcurl/k6 was missing).

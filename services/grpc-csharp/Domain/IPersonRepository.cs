@@ -9,7 +9,12 @@ namespace OmniTest.Polyglot.Nexus.Api.CSharp.Domain;
 public interface IPersonRepository
 {
     Task<Person> CreateAsync(Person person, CancellationToken cancellationToken);
-    Task<(IReadOnlyList<Person> Items, int PageCount)> ReadAllAsync(int limit, int offset, CancellationToken cancellationToken);
-    Task<IReadOnlyList<Person>> SearchByFilterAsync(PersonFilter filter, int limit, CancellationToken cancellationToken);
+
+    /// <summary>Paginated rows plus full-table COUNT(*) (not page length).</summary>
+    Task<(IReadOnlyList<Person> Items, int TotalCount)> ReadAllAsync(int limit, int offset, CancellationToken cancellationToken);
+
+    /// <summary>Filtered page plus matching COUNT(*) so languages compare fairly.</summary>
+    Task<(IReadOnlyList<Person> Items, int TotalCount)> SearchByFilterAsync(PersonFilter filter, int limit, CancellationToken cancellationToken);
+
     Task<IReadOnlyList<Person>> SearchByVectorAsync(float[] vector, int topK, CancellationToken cancellationToken);
 }

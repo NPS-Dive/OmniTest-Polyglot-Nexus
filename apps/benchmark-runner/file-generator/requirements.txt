@@ -1,0 +1,3 @@
+# File: apps/benchmark-runner/file-generator/requirements.txt
+# Purpose: Append-only history CLI. Python 3.10+ standard library only — no pip deps.
+# SOLID: keep this module install-free so runners can call `python main.py` as-is.

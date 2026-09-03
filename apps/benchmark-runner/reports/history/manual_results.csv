@@ -1,1 +1,1 @@
-timestamp_utc,test_name,test_type,language,p90_ms,p95_ms,p98_ms,ttl_ms,p50_ms,avg_ms,max_ms,iterations,vus,fail_rate,pass,error_message
+timestamp_utc,test_name,test_type,language,p90_ms,p95_ms,p98_ms,p99_ms,ttl_ms,p50_ms,avg_ms,max_ms,iterations,vus,fail_rate,pass,error_message

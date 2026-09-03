@@ -1,7 +1,7 @@
 # ==============================================================================
 # File: services/ai-agents/langgraph/graphs.py
 # Purpose: Deterministic QA graphs invoked as Hermes skills (not a user chat).
-#          Stubs return structured dicts so wiring can be completed later.
+#          Deterministic graphs over history CSV/JSONL + knowledge-base (no LLM required).
 # SOLID: OCP — add a graph function; OpenClaw never imports this module.
 # Graphs: run_comparison, explain_failure, draft_istqb_bug, rag_ask
 # ==============================================================================

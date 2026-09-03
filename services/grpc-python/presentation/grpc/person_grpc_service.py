@@ -1,9 +1,13 @@
 """
 File: presentation/grpc/person_grpc_service.py
 Purpose: Map proto <-> domain. No SQL. Depends on IPersonRepository (DIP).
+SOLID: presentation never constructs SessionLocal or the Postgres adapter;
+       the composition root injects a unit-of-work factory.
 """
 
 from __future__ import annotations
+
+from typing import Callable, Tuple
 
 import grpc
 
@@ -11,8 +15,6 @@ import person_service_pb2 as pb
 import person_service_pb2_grpc as pb_grpc
 from domain.i_person_repository import IPersonRepository
 from domain.person import Person, PersonFilter
-from infrastructure.db.database import SessionLocal
-from infrastructure.db.postgres_person_repository import PostgresPersonRepository
 from presentation.grpc.enum_map import (
     clamp_limit,
     clamp_top_k,
@@ -24,8 +26,12 @@ from presentation.grpc.enum_map import (
     sex_to_proto,
 )
 
+# Session + repository pair. Session must be closed by the caller (RPC finally).
+RepoFactory = Callable[[], Tuple[object, IPersonRepository]]
+
 
 def _to_proto(person: Person) -> pb.Person:
+    """Domain Person → proto Person (gender/job_category/embedding_vector mapping)."""
     msg = pb.Person(
         id=str(person.id) if person.id else "",
         first_name=person.first_name,
@@ -46,6 +52,7 @@ def _to_proto(person: Person) -> pb.Person:
 
 
 def _from_proto(msg: pb.Person) -> Person:
+    """Proto Person → domain. birth_date is ignored (derived on read only)."""
     embedding = list(msg.embedding_vector) if msg.embedding_vector else None
     return Person(
         first_name=msg.first_name,
@@ -63,11 +70,14 @@ def _from_proto(msg: pb.Person) -> Person:
 
 
 class PersonGrpcService(pb_grpc.PersonServiceServicer):
-    """gRPC adapter. Opens a session per RPC and injects the Postgres repo."""
+    """gRPC adapter. Opens a unit of work per RPC via the injected factory."""
 
-    def _repo(self) -> tuple:
-        session = SessionLocal()
-        return session, PostgresPersonRepository(session)
+    def __init__(self, open_repo: RepoFactory) -> None:
+        self._open_repo = open_repo
+
+    def _repo(self) -> Tuple[object, IPersonRepository]:
+        """Why a factory: each RPC needs its own SQLAlchemy session (thread safety)."""
+        return self._open_repo()
 
     def CreatePerson(self, request, context):
         session, repo = self._repo()
@@ -115,8 +125,8 @@ class PersonGrpcService(pb_grpc.PersonServiceServicer):
                 sex=sex_label,
                 national_code=request.national_code if request.HasField("national_code") else None,
             )
-            people = repo.search_by_filter(filters, 100)
-            return pb.PersonListResponse(persons=[_to_proto(p) for p in people], total_count=len(people))
+            people, total = repo.search_by_filter(filters, 100)
+            return pb.PersonListResponse(persons=[_to_proto(p) for p in people], total_count=total)
         except Exception as exc:
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(str(exc))
@@ -133,6 +143,7 @@ class PersonGrpcService(pb_grpc.PersonServiceServicer):
                 context.set_details("vector is required")
                 return pb.PersonListResponse()
             people = repo.search_by_vector(vector, clamp_top_k(request.top_k))
+            # Vector kNN: total_count is the returned neighbour count (documented).
             return pb.PersonListResponse(persons=[_to_proto(p) for p in people], total_count=len(people))
         except Exception as exc:
             context.set_code(grpc.StatusCode.INTERNAL)
