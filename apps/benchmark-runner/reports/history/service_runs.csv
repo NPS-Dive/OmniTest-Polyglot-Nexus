@@ -1,1 +1,8 @@
 timestamp_utc,language,port,up,latency_ms,error_message
+2026-09-03T22:37:34.528773+00:00,go,50054,True,5.0,
+2026-09-03T22:37:38.6472453Z,cpp,50051,True,32.17,
+2026-09-03T22:37:39.3190845Z,python,50052,False,407.239,connection timed out
+2026-09-03T22:37:39.7429974Z,java,50053,False,403.922,connection timed out
+2026-09-03T22:37:39.7536951Z,go,50054,True,0.71,
+2026-09-03T22:37:40.3231793Z,csharp,5078,False,407.432,connection timed out
+2026-09-03T22:37:40.7482831Z,node,5079,False,410.004,connection timed out

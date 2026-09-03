@@ -1,0 +1,7 @@
+{"timestamp_utc":"2026-09-03T22:37:34.528773+00:00","language":"go","port":50054,"up":true,"latency_ms":5.0,"error_message":""}
+{"timestamp_utc":"2026-09-03T22:37:38.6472453Z","language":"cpp","port":50051,"up":true,"latency_ms":32.17,"error_message":""}
+{"timestamp_utc":"2026-09-03T22:37:39.3190845Z","language":"python","port":50052,"up":false,"latency_ms":407.239,"error_message":"connection timed out"}
+{"timestamp_utc":"2026-09-03T22:37:39.7429974Z","language":"java","port":50053,"up":false,"latency_ms":403.922,"error_message":"connection timed out"}
+{"timestamp_utc":"2026-09-03T22:37:39.7536951Z","language":"go","port":50054,"up":true,"latency_ms":0.71,"error_message":""}
+{"timestamp_utc":"2026-09-03T22:37:40.3231793Z","language":"csharp","port":5078,"up":false,"latency_ms":407.432,"error_message":"connection timed out"}
+{"timestamp_utc":"2026-09-03T22:37:40.7482831Z","language":"node","port":5079,"up":false,"latency_ms":410.004,"error_message":"connection timed out"}
