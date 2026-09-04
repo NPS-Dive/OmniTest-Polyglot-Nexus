@@ -55,9 +55,15 @@ function Get-OpnLanguageEndpoint {
 function Test-OpnGrpcurlPresent {
     <#
     .SYNOPSIS
-        $true if grpcurl is on PATH (needed for live gRPC functional calls).
+        $true if grpcurl is on PATH or under repo tools/grpcurl.
     #>
-    return [bool](Get-Command grpcurl -ErrorAction SilentlyContinue)
+    if (Get-Command grpcurl -ErrorAction SilentlyContinue) { return $true }
+    $local = Join-Path (Get-OpnRepoRoot) 'tools\grpcurl\grpcurl.exe'
+    if (Test-Path -LiteralPath $local) {
+        $env:Path = "$(Split-Path -Parent $local);$env:Path"
+        return $true
+    }
+    return $false
 }
 
 function Get-OpnGrpcurlInstallHint {

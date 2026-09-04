@@ -1,2 +1,5 @@
 timestamp_utc,test_name,test_type,language,p90_ms,p95_ms,p98_ms,p99_ms,ttl_ms,p50_ms,avg_ms,max_ms,iterations,vus,fail_rate,pass,error_message
 2026-09-03T22:39:35.573046+00:00,K6-load-go,performance,go,3660.0,4010.0,4410.0,4580.0,31500.0,1700.0,2130.0,4670.0,138,10,0.0,False,thresholds p90/p95 crossed on 1M COUNT(*); 138/138 gRPC checks OK
+2026-09-04T01:26:26.2933791Z,K6-load-go,performance,go,310.157,373.019,400.04,402.141,11081.119,269.645,279.336,404.241,27,1,1,True,
+2026-09-04T01:26:37.9865759Z,K6-load-csharp,performance,csharp,0,0,0,0,10676.751,0,0,0,1,1,0,True,
+2026-09-04T01:26:48.7593351Z,K6-load-node,performance,node,0,0,0,0,10743.458,0,0,0,24432,1,0,True,

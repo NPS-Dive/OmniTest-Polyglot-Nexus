@@ -40,6 +40,9 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5080",
         "http://127.0.0.1:5080",
+        # Windows Hyper-V often reserves 5080-5081; alternate UI ports:
+        "http://localhost:18080",
+        "http://127.0.0.1:18080",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -198,8 +201,11 @@ def probe(body: ProbeBody) -> dict[str, Any]:
 
 
 if __name__ == "__main__":
-    # Composition root: bind 5081 on all interfaces so WASM on 5080 can reach us.
+    # Composition root: default 5081; override with ORCH_PORT (e.g. 18081 when
+    # Windows Hyper-V excludes 5080-5081).
+    import os
     import uvicorn
 
-    uvicorn.run("main:app", host="0.0.0.0", port=5081, reload=False)
+    port = int(os.environ.get("ORCH_PORT", "5081"))
+    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=False)
     sys.exit(0)

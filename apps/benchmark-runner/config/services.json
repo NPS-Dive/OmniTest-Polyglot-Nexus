@@ -1,21 +1,21 @@
 {
-  "_comment": "File: apps/benchmark-runner/config/services.json. Purpose: language key → gRPC host:port + table. SOLID: SRP — addressing only; runners and k6 consume this map. Do not add secrets here.",
+  "_comment": "File: apps/benchmark-runner/config/services.json. Purpose: language key → gRPC host:port + table. SOLID: SRP — addressing only; runners and k6 consume this map. Do not add secrets here. NOTE: On this Windows host Hyper-V excludes 50000-50059 and 5079-5178; cpp/python/java/node use 1605x/16079. Canonical README ports still preferred when OS allows.",
   "languages": {
     "cpp": {
       "host": "127.0.0.1",
-      "port": 50051,
+      "port": 16051,
       "table": "persons_cpp",
       "serviceName": "grpc-cpp"
     },
     "python": {
       "host": "127.0.0.1",
-      "port": 50052,
+      "port": 16052,
       "table": "persons_python",
       "serviceName": "grpc-python"
     },
     "java": {
       "host": "127.0.0.1",
-      "port": 50053,
+      "port": 16053,
       "table": "persons_java",
       "serviceName": "grpc-java"
     },
@@ -33,7 +33,7 @@
     },
     "node": {
       "host": "127.0.0.1",
-      "port": 5079,
+      "port": 16079,
       "table": "persons_node",
       "serviceName": "grpc-node"
     }

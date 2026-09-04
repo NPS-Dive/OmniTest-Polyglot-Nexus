@@ -183,7 +183,7 @@ public class PersonGrpcService extends PersonServiceGrpc.PersonServiceImplBase {
         observer.onCompleted();
     }
 
-    private static io.grpc.StatusException mapInvalid(IllegalArgumentException ex) {
+    private static io.grpc.StatusRuntimeException mapInvalid(IllegalArgumentException ex) {
         String msg = ex.getMessage() == null ? "invalid argument" : ex.getMessage();
         if (msg.contains("invalid person id")) {
             return Status.INVALID_ARGUMENT.withDescription("id must be a valid UUID").asRuntimeException();
@@ -191,7 +191,7 @@ public class PersonGrpcService extends PersonServiceGrpc.PersonServiceImplBase {
         return Status.INVALID_ARGUMENT.withDescription(msg).asRuntimeException();
     }
 
-    private static io.grpc.StatusException mapInternal(Exception ex) {
+    private static io.grpc.StatusRuntimeException mapInternal(Exception ex) {
         String msg = ex.getMessage() == null ? "database error" : ex.getMessage();
         return Status.INTERNAL.withDescription("database error: " + msg).asRuntimeException();
     }

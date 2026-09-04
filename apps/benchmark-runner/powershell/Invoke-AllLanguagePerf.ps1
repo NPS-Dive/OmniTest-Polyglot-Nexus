@@ -150,6 +150,13 @@ try {
                 '--summary-trend-stats', 'avg,min,med,max,p(90),p(95),p(98),p(99)'
                 '--tag', "lang=$lang"
             )
+            # Push live series to Prometheus so Grafana test-comparison panels fill.
+            if ($env:K6_PROMETHEUS_RW_SERVER_URL) {
+                if (-not $env:K6_PROMETHEUS_RW_TREND_STATS) {
+                    $env:K6_PROMETHEUS_RW_TREND_STATS = 'p(90),p(95),p(98),p(99),avg'
+                }
+                $k6Args += @('--out', 'experimental-prometheus-rw')
+            }
             if ($Smoke) {
                 $k6Args += @('--duration', '10s')
             }

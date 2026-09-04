@@ -125,18 +125,26 @@ elseif (-not (Test-Path -LiteralPath $proto)) {
     $err = "Proto not found at $proto"
 }
 else {
+    # PowerShell strips {} from native argv — feed JSON via @file for grpcurl.
+    $bodyFile = Join-Path ([IO.Path]::GetTempPath()) ("opn-grpc-" + [guid]::NewGuid().ToString('N') + ".json")
+    [IO.File]::WriteAllText($bodyFile, $body, [Text.UTF8Encoding]::new($false))
     $grpcurlArgs = @(
         '-plaintext'
         '-import-path', $importDir
         '-proto', (Split-Path -Leaf $proto)
-        '-d', $body
+        '-d', "@$bodyFile"
         '-max-time', '30'
         $target
         $method
     )
     $sw = [System.Diagnostics.Stopwatch]::StartNew()
-    $output = & grpcurl @grpcurlArgs 2>&1
-    $exit = $LASTEXITCODE
+    try {
+        $output = & grpcurl @grpcurlArgs 2>&1
+        $exit = $LASTEXITCODE
+    }
+    finally {
+        Remove-Item -LiteralPath $bodyFile -Force -ErrorAction SilentlyContinue
+    }
     $sw.Stop()
     $ttl = $sw.Elapsed.TotalMilliseconds
     if ($exit -eq 0) {
@@ -156,7 +164,7 @@ else {
         )
         if ($PayloadKind -in $safeKinds) {
             # Safe handling = process still answered (non-crash). Connection refused is fail.
-            if ($err -notmatch 'connection refused|Unavailable|dial tcp') {
+            if ($err -notmatch 'connection refused|Unavailable|dial tcp|Failed to dial|context deadline') {
                 $pass = $true
                 $err = "safe-handling: $err"
             }
