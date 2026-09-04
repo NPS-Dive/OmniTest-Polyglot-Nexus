@@ -137,7 +137,7 @@ cd apps\benchmark-runner\k6
 k6 run -e LANG=go .\load.js
 ```
 
-BDD map: `docs/README.md` ↔ `docs/gherkin/*.feature` (`@functional` `@performance` `@security`).
+ISTQB/ASTQB scenarios and cases: `docs/qa/scenarios/TS-*/` (catalog: `docs/qa/catalog.md`). BDD map: `docs/README.md` ↔ `docs/gherkin/*.feature` (`@functional` `@performance` `@security` `@owasp`). Defects: `apps/benchmark-runner/reports/bugs/` (CTFL 4.0.1 template + register).
 
 History (append-only): `manual_results`, `automated_results`, `performance_results`, and separate **service_runs** CSV/JSONL. Columns include p90/p95/p98/**p99** and TTL. Bugs: `reports/bugs/TEMPLATE.md`. Probe ports: `powershell/Probe-Services.ps1`.
 

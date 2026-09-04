@@ -15,7 +15,14 @@ param(
         'TC-EDGE-001',
         'TC-EDGE-002',
         'TC-EDGE-003',
-        'TC-EDGE-004'
+        'TC-EDGE-004',
+        # OWASP API Security Top 10:2023 — executable safe cases (see docs/qa/catalog.md)
+        'TC-SEC-API4-READALL-RESOURCE',
+        'TC-SEC-API3-FILTER-INJECTION',
+        'TC-SEC-API4-VECTOR-TOPK',
+        'TC-SEC-API1-CREATE-ID-TAMPER',
+        'TC-SEC-API3-CREATE-MASS-ASSIGNMENT',
+        'TC-SEC-API8-VERBOSE-ERRORS'
     )
 )
 

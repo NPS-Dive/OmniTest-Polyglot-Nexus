@@ -15,7 +15,7 @@ Feature: Read all persons with pagination
     Given Postgres opn_db is reachable on localhost:5432
     And the target language gRPC process is listening
 
-  @functional
+  @functional @owasp @api4
   Scenario Outline: Default page returns at most 50 rows
     Given I target language "<lang>"
     When I call ReadAllPersons with limit 5 and offset 0
@@ -32,7 +32,7 @@ Feature: Read all persons with pagination
       | csharp |
       | node   |
 
-  @functional
+  @functional @owasp @api1 @api3
   Scenario Outline: Create then list includes the new id when offset is current
     Given I target language "<lang>"
     When I call CreatePerson with a unique Bench Runner payload

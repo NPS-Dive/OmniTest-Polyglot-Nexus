@@ -1,27 +1,29 @@
 # docs
 
-QA documentation for OmniTest-Polyglot-Nexus. Features live in `gherkin/`. Runners live in `apps/benchmark-runner/powershell/`.
+QA documentation for OmniTest-Polyglot-Nexus.
+
+**ISTQB / ASTQB work products** live in **[qa/](qa/)** — one folder per scenario under [qa/scenarios/](qa/scenarios/), catalog at [qa/catalog.md](qa/catalog.md).  
+Gherkin in `gherkin/` is the BDD view (`@owasp @apiN` on security cases). Runners: `apps/benchmark-runner/powershell/`.
 
 ## Feature → script map
 
 | Feature | Tags | Catalog / script |
 |---------|------|------------------|
-| `gherkin/person-readall.feature` | `@functional` `@performance` | `TC-FUNC-001` (all langs via `-Language`), `TC-FUNC-004` Create, thin `manual/TC-FUNC-001`…`006`, `k6/load.js` |
-| `gherkin/person-filter.feature` | `@functional` `@security` | `TC-FUNC-002`, `TC-EDGE-001`, `TC-EDGE-004`, `manual/TC-FUNC-007`, `TC-FUNC-010`, `TC-EDGE-001` |
-| `gherkin/person-vector.feature` | `@functional` `@performance` | `TC-FUNC-003`, `TC-EDGE-003`, `manual/TC-FUNC-008`, `TC-EDGE-003` |
-| `gherkin/person-security.feature` | `@security` | `TC-EDGE-002`, `k6/security.js` |
-| `gherkin/person-performance.feature` | `@performance` | `k6/load.js` `stress.js` `spike.js` `endurance.js` `scalability.js` `concurrency.js` `compare.js`; wrapper `Invoke-AllLanguagePerf.ps1` |
+| `gherkin/person-readall.feature` | `@functional` `@owasp` `@api4` `@performance` | `TC-FUNC-001`, `TC-FUNC-004`, `TC-SEC-API4-READALL-RESOURCE`, `k6/load.js` |
+| `gherkin/person-filter.feature` | `@functional` `@security` `@owasp` `@api3` | `TC-FUNC-002`, `TC-EDGE-001/004`, `TC-SEC-API3-FILTER-INJECTION` |
+| `gherkin/person-vector.feature` | `@functional` `@owasp` `@api4` `@performance` | `TC-FUNC-003`, `TC-EDGE-003`, `TC-SEC-API4-VECTOR-TOPK` |
+| `gherkin/person-security.feature` | `@security` `@owasp` `@api1`…`@api10` | OWASP SEC IDs, `k6/security.js`, `Invoke-OwaspPlatformChecklist.ps1` |
+| `gherkin/person-performance.feature` | `@performance` | `k6/*.js` via `Invoke-AllLanguagePerf.ps1` |
 
 ## How steps are executed (Windows)
-
-There is no Cucumber runtime in-repo. Treat each Scenario Outline example as:
 
 ```powershell
 cd apps\benchmark-runner\powershell
 .\Invoke-ManualTest.ps1 -TestId TC-FUNC-001 -Language python
+.\Invoke-ManualTest.ps1 -TestId TC-SEC-API3-FILTER-INJECTION -Language csharp
 ```
 
-`Invoke-AllManualTests.ps1` loops languages × TestIds (4 RPCs × 6 langs + edges). Pester can wrap the same scripts later; do not duplicate the payload builders.
+`Invoke-AllManualTests.ps1` loops languages × TestIds (functional, edge, and executable OWASP SEC cases).
 
 ## History and bugs
 

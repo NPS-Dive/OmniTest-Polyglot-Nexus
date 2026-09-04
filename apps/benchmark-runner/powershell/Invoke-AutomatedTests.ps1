@@ -32,6 +32,12 @@ $Catalog = @{
     'TC-EDGE-002' = @{ Rpc = 'ReadAllPersons'; PayloadKind = 'readall_huge_limit' }
     'TC-EDGE-003' = @{ Rpc = 'SearchByVector'; PayloadKind = 'vector_topk_zero' }
     'TC-EDGE-004' = @{ Rpc = 'SearchByFilter'; PayloadKind = 'filter_sql_name' }
+    'TC-SEC-API4-READALL-RESOURCE' = @{ Rpc = 'ReadAllPersons'; PayloadKind = 'readall_huge_limit' }
+    'TC-SEC-API3-FILTER-INJECTION' = @{ Rpc = 'SearchByFilter'; PayloadKind = 'filter_sql_name' }
+    'TC-SEC-API4-VECTOR-TOPK' = @{ Rpc = 'SearchByVector'; PayloadKind = 'vector_topk_huge' }
+    'TC-SEC-API1-CREATE-ID-TAMPER' = @{ Rpc = 'CreatePerson'; PayloadKind = 'create_bad_uuid' }
+    'TC-SEC-API3-CREATE-MASS-ASSIGNMENT' = @{ Rpc = 'CreatePerson'; PayloadKind = 'create_extra_fields' }
+    'TC-SEC-API8-VERBOSE-ERRORS' = @{ Rpc = 'SearchByVector'; PayloadKind = 'vector_bad_dims' }
 }
 
 $key = $TestId.ToUpperInvariant()

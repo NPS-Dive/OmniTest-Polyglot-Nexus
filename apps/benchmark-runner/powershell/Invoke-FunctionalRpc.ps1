@@ -28,9 +28,14 @@ param(
         'filter_name',
         'filter_empty',
         'filter_sql_name',
+        'filter_oversized',
         'vector_dummy',
         'vector_topk_zero',
-        'create_minimal'
+        'vector_topk_huge',
+        'vector_bad_dims',
+        'create_minimal',
+        'create_bad_uuid',
+        'create_extra_fields'
     )]
     [string]$PayloadKind = 'readall_default',
 
@@ -52,6 +57,10 @@ function Get-OpnRpcPayload {
         'filter_name' { return '{"first_name":"A"}' }
         'filter_empty' { return '{}' }
         'filter_sql_name' { return '{"first_name":"Robert''); DROP TABLE persons_python;--"}' }
+        'filter_oversized' {
+            $long = 'X' * 20000
+            return "{`"first_name`":`"$long`"}"
+        }
         'vector_dummy' {
             $vals = (1..384 | ForEach-Object { '0.01' }) -join ','
             return "{`"vector`":[$vals],`"top_k`":5}"
@@ -60,11 +69,32 @@ function Get-OpnRpcPayload {
             $vals = (1..384 | ForEach-Object { '0.0' }) -join ','
             return "{`"vector`":[$vals],`"top_k`":0}"
         }
+        'vector_topk_huge' {
+            $vals = (1..384 | ForEach-Object { '0.0' }) -join ','
+            return "{`"vector`":[$vals],`"top_k`":999999}"
+        }
+        'vector_bad_dims' {
+            return '{"vector":[0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8],"top_k":5}'
+        }
         'create_minimal' {
             $id = [guid]::NewGuid().ToString()
             $code = Get-Random -Minimum 1000000000 -Maximum 1999999999
             return (@'
 {"person":{"id":"ID_PLACE","first_name":"Bench","last_name":"Runner","age":30,"gender":"SEX_MALE","marital_status":"MARITAL_STATUS_SINGLE","children_count":0,"living_place":"LIVING_PLACE_APARTMENT","job_category":"OCCUPATION_FULL_TIME","national_code":"CODE_PLACE","has_passport":false}}
+'@).Replace('ID_PLACE', $id).Replace('CODE_PLACE', [string]$code)
+        }
+        'create_bad_uuid' {
+            $code = Get-Random -Minimum 1000000000 -Maximum 1999999999
+            return (@'
+{"person":{"id":"not-a-uuid","first_name":"Bad","last_name":"Uuid","age":30,"gender":"SEX_MALE","marital_status":"MARITAL_STATUS_SINGLE","children_count":0,"living_place":"LIVING_PLACE_APARTMENT","job_category":"OCCUPATION_FULL_TIME","national_code":"CODE_PLACE","has_passport":false}}
+'@).Replace('CODE_PLACE', [string]$code)
+        }
+        'create_extra_fields' {
+            $id = [guid]::NewGuid().ToString()
+            $code = Get-Random -Minimum 1000000000 -Maximum 1999999999
+            # Unknown JSON keys: grpcurl/proto may strip them — that is an acceptable API3 pass.
+            return (@'
+{"person":{"id":"ID_PLACE","first_name":"Mass","last_name":"Assign","age":30,"gender":"SEX_MALE","marital_status":"MARITAL_STATUS_SINGLE","children_count":0,"living_place":"LIVING_PLACE_APARTMENT","job_category":"OCCUPATION_FULL_TIME","national_code":"CODE_PLACE","has_passport":false,"is_admin":true,"role":"root"}}
 '@).Replace('ID_PLACE', $id).Replace('CODE_PLACE', [string]$code)
         }
         default { throw "Unknown PayloadKind $Kind" }
@@ -119,7 +149,12 @@ else {
         if (-not $err) { $err = "grpcurl exit $exit" }
         # Huge limit / SQL-looking names: API may return InvalidArgument. That is
         # still "safe handling" for security/edge cases — callers decide pass rules.
-        if ($PayloadKind -in @('readall_huge_limit', 'filter_sql_name', 'vector_topk_zero')) {
+        $safeKinds = @(
+            'readall_huge_limit', 'filter_sql_name', 'filter_oversized',
+            'vector_topk_zero', 'vector_topk_huge', 'vector_bad_dims',
+            'create_bad_uuid', 'create_extra_fields'
+        )
+        if ($PayloadKind -in $safeKinds) {
             # Safe handling = process still answered (non-crash). Connection refused is fail.
             if ($err -notmatch 'connection refused|Unavailable|dial tcp') {
                 $pass = $true

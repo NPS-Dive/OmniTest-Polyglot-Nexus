@@ -31,7 +31,7 @@ Feature: Filter persons by optional fields
     Then the RPC succeeds
     And the handler does not require every optional field
 
-  @security
+  @security @owasp @api3
   Scenario: SQL-looking first_name is parameterized
     Given I target language "python"
     When I call SearchByFilter with first_name "Robert'); DROP TABLE persons_python;--"

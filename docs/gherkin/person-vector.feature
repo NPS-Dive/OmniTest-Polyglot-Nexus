@@ -25,7 +25,7 @@ Feature: Vector nearest-neighbour search
       | csharp |
       | node   |
 
-  @functional
+  @functional @owasp @api4
   Scenario: top_k 0 uses the service default
     Given I target language "java"
     When I call SearchByVector with top_k 0
